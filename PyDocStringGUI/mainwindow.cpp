@@ -197,6 +197,11 @@ void MainWindow::on_pb_argsMinus_clicked()
 
     m_funcList[m_currentFunc].list_args.removeAt(selectedRow);
     actArgsListView();
+
+    if(std::size(m_funcList[m_currentFunc].list_args) == 0)
+    {
+        oneElementModified();
+    }
 }
 
         //function return values
@@ -222,6 +227,11 @@ void MainWindow::on_pb_returnArgsMinus_clicked()
     }
 
     actReturnArgsListView();
+
+    if(std::size(m_funcList[m_currentFunc].list_returnArgs) == 0)
+    {
+        oneElementModified();
+    }
 }
 
     //change function text

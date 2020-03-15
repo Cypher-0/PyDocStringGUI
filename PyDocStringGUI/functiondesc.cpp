@@ -82,7 +82,8 @@ QString getFormattedDesc(const FunctionDesc &fDesc)
 
     if(std::size(fDesc.list_returnArgs) == 1)
     {
-        result += "( ***"+fDesc.list_returnArgs[0].type+"*** ) : "+fDesc.list_returnArgs[0].desc+"\n\n";
+        QString desc{(fDesc.list_returnArgs[0].desc.isEmpty())?"-":fDesc.list_returnArgs[0].desc};
+        result += "( ***"+fDesc.list_returnArgs[0].type+"*** ) : "+desc+"\n\n";
     }
     else if(std::size(fDesc.list_returnArgs) > 1)
     {
@@ -90,9 +91,11 @@ QString getFormattedDesc(const FunctionDesc &fDesc)
 
         for(const auto &elem : fDesc.list_returnArgs)
         {
-            result += "- "+elem.name+" : ( ***"+elem.type+"*** ): "+elem.desc+"\n\n";
+            QString desc{(elem.desc.isEmpty())?"-":elem.desc};
+            result += "- "+elem.name+" : ( ***"+elem.type+"*** ): "+desc+"\n\n";
         }
     }
+    else{}
 
     result += "\"\"\"";
 
