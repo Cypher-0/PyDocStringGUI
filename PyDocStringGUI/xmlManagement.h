@@ -1,6 +1,8 @@
 #ifndef XMLMANAGEMENT_H
 #define XMLMANAGEMENT_H
 
+#include "functiondesc.h"
+
 #include <QDomImplementation>
 #include <QDomDocument>
 #include <QTextStream>
@@ -81,9 +83,9 @@ static void readObjectListFromXMLNode(QList<T> &outList,QDomElement &rootNode)
 
     while(!currentNode.isNull())
     {
-        //T tempElement{readFromXmlNode(currentNode)};
-        //tempElement.readFromXMLNode(currentNode);
-        //outList.push_back(tempElement);
+        T tempElement{};
+        readFromXmlNode(tempElement,currentNode);
+        outList.append(tempElement);
 
         currentNode = currentNode.nextSiblingElement();
     }

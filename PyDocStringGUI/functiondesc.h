@@ -5,6 +5,8 @@
 #include <QList>
 #include <QDomDocument>
 
+#include "xmlProps.h"
+
 namespace PyDesc
 {
 
@@ -31,6 +33,12 @@ struct FunctionDesc
 void writeToXml(const FunctionDesc &var,QDomDocument &doc, QDomElement &root);
 
 void writeToXml(const Argument &var,QDomDocument &doc, QDomElement &root);
+
+
+
+void readFromXmlNode(FunctionDesc &target,const QDomElement &objectRoot);
+
+void readFromXmlNode(Argument &target,const QDomElement &objectRoot);
 
 
 

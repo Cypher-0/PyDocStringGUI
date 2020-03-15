@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(ui->tw_return,SIGNAL(switchRows(int,int)),this,SLOT(returnArgsSwitchRows(int,int)));
 
 
-    QList<PyDesc::Argument> list_args{{"client","ModbusPLC","Automate sur lequel lire le bit"},{"bit","int","Adresse sur laquelle lire le bit"},
+    /*QList<PyDesc::Argument> list_args{{"client","ModbusPLC","Automate sur lequel lire le bit"},{"bit","int","Adresse sur laquelle lire le bit"},
                                       {"Value","int","Adresse sur laquelle lire le bit"},{"Value","int","Adresse sur laquelle lire le bit"}};
     QList<PyDesc::Argument> list_returnArgs{{"Index 0","int","Valeur lue sur l'automate"}};
     QList<PyDesc::Argument> list_returnArgs2{{"Index 0","int","Valeur lue sur l'automate"},{"Index 1","str","nom test"}};
@@ -31,7 +31,9 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->le_funcName->setText("writeBit");
     ui->te_desc->setText("Permet d'écrire un bit sur l'automate");
 
-    XML::writeObjectListToXMLFile(m_funcList,"FunctionDescriptionFile","default.xml");
+    XML::writeObjectListToXMLFile(m_funcList,"FunctionDescriptionFile","default.xml");*/
+
+    XML::readObjectListFromXMLFile(m_funcList,"FunctionDescriptionFile","default.xml");
 
     actArgsListView();
     actReturnArgsListView();
@@ -246,6 +248,8 @@ void MainWindow::on_te_desc_textChanged()
 void MainWindow::on_le_funcName_textChanged(const QString &arg1)
 {
     m_funcList[m_currentFunc].name = arg1;
+
+    ui->cb_funcSelec->setItemText(ui->cb_funcSelec->currentIndex(),arg1);
 
     oneElementModified();
 }
