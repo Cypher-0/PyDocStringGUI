@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "functiondesc.h"
+#include "FunctionDescription/functiondesc.h"
 #include <QList>
 
 #define PYDESCGUI_FILE_EXT "pdsgui"

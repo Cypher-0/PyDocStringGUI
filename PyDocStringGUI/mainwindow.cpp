@@ -8,9 +8,9 @@
 
 #include <QDebug>
 
-#include "xmlProps.h"
-#include "functiondesc.h"
-#include "xmlManagement.h"
+#include "FunctionDescription/xmlProps.h"
+#include "FunctionDescription/functiondesc.h"
+#include "FunctionDescription/xmlListManagement.h"
 #include "advancedtablewidget.h"
 
 #define cout qDebug()

@@ -18,17 +18,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    FunctionDescription/functiondesc.cpp \
     advancedtablewidget.cpp \
-    functiondesc.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
+    FunctionDescription/functiondesc.h \
+    FunctionDescription/xmlListManagement.h \
+    FunctionDescription/xmlProps.h \
     advancedtablewidget.h \
-    functiondesc.h \
     mainwindow.h \
-    xmlManagement.h \
-    xmlProps.h
 
 FORMS += \
     mainwindow.ui
