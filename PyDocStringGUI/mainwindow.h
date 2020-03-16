@@ -5,6 +5,8 @@
 #include "functiondesc.h"
 #include <QList>
 
+#define PYDESCGUI_FILE_EXT "pdsgui"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -32,8 +34,6 @@ private slots:
 
 
 
-    void on_act_enableOutput_toggled(bool arg1);
-
     void on_tw_args_cellChanged(int row, int column);
 
     void on_tw_return_cellChanged(int row, int column);
@@ -53,17 +53,30 @@ private slots:
 
     void on_dw_output_visibilityChanged(bool visible);
 
-    void on_actionEnregistrer_sous_triggered();
-
 
     void on_cb_funcSelec_currentIndexChanged(int index);
 
     void on_pb_funcAdd_clicked();
+
+    void on_pb_funcMinus_clicked();
+
+    //actions
+
+    void on_act_enableOutput_toggled(bool arg1);
+
+    void on_action_saveAs_triggered();
+
+    void on_action_open_triggered();
+
+    void on_action_save_triggered();
 
 private:
     Ui::MainWindow *ui;
 
     int m_currentFunc{0};
     QList<PyDesc::FunctionDesc> m_funcList{};
+
+    inline static const QString m_saveFileDocType{"FunctionDescriptionFile"};
+    QString m_currentSavePath{""};
 };
 #endif // MAINWINDOW_H

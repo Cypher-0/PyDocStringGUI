@@ -3,6 +3,8 @@
 
 #include <QList>
 #include <QInputDialog>
+#include <QFileDialog>
+#include <QMessageBox>
 
 #include <QDebug>
 
@@ -33,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     XML::writeObjectListToXMLFile(m_funcList,"FunctionDescriptionFile","default.xml");*/
 
-    XML::readObjectListFromXMLFile(m_funcList,"FunctionDescriptionFile","default.xml");
+    XML::readObjectListFromXMLFile(m_funcList,m_saveFileDocType,"default.xml");
 
     actArgsListView();
     actReturnArgsListView();
@@ -45,15 +47,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_act_enableOutput_toggled(bool arg1)
-{
-    ui->dw_output->setVisible(arg1);
-    actArgsListView();
-}
-
 void MainWindow::actArgsListView()
 {
     ui->tw_args->setColumnCount(3);
+
+    if(m_funcList.isEmpty())
+        return;
 
     auto argsList{&(m_funcList[m_currentFunc].list_args)};
 
@@ -74,6 +73,9 @@ void MainWindow::actArgsListView()
 void MainWindow::actReturnArgsListView()
 {
     ui->tw_args->setColumnCount(3);
+
+    if(m_funcList.isEmpty())
+        return;
 
     auto returnList{&(m_funcList[m_currentFunc].list_returnArgs)};
 
@@ -97,6 +99,9 @@ void MainWindow::on_tw_args_cellChanged(int row, int column)
 {
     auto newText{ui->tw_args->item(row,column)->text()};
 
+    if(m_funcList.isEmpty())
+        return;
+
     auto argsList{&(m_funcList[m_currentFunc].list_args)};
 
     if(column == 0)
@@ -112,6 +117,9 @@ void MainWindow::on_tw_args_cellChanged(int row, int column)
 void MainWindow::on_tw_return_cellChanged(int row, int column)
 {
     auto newText{ui->tw_return->item(row,column)->text()};
+
+    if(m_funcList.isEmpty())
+        return;
 
     auto argsList{&(m_funcList[m_currentFunc].list_returnArgs)};
 
@@ -129,6 +137,9 @@ void MainWindow::on_tw_return_cellChanged(int row, int column)
 
 void MainWindow::argsSwitchRows(int startRow,int endRow)
 {
+    if(m_funcList.isEmpty())
+        return;
+
     auto argsList{&(m_funcList[m_currentFunc].list_args)};
 
     argsList->swapItemsAt(startRow,endRow);
@@ -140,6 +151,9 @@ void MainWindow::argsSwitchRows(int startRow,int endRow)
 
 void MainWindow::returnArgsSwitchRows(int startRow,int endRow)
 {
+    if(m_funcList.isEmpty())
+        return;
+
     auto returnList{&(m_funcList[m_currentFunc].list_returnArgs)};
 
     returnList->swapItemsAt(startRow,endRow);
@@ -173,12 +187,18 @@ void MainWindow::actFunctionListBox(int newIndex)
 
 void MainWindow::actFuncDescAndName()
 {
+    if(m_funcList.isEmpty())
+        return;
+
     ui->le_funcName->setText(m_funcList[m_currentFunc].name);
     ui->te_desc->setPlainText(m_funcList[m_currentFunc].desc);
 }
 
 void MainWindow::oneElementModified()
 {
+    if(m_funcList.isEmpty())
+        return;
+
     ui->tb_output->setPlainText(PyDesc::getFormattedDesc(m_funcList[m_currentFunc]));
 }
 
@@ -187,12 +207,23 @@ void MainWindow::oneElementModified()
         //function arguments
 void MainWindow::on_pb_argsAdd_clicked()
 {
+    if(m_funcList.isEmpty())
+    {
+        return;
+    }
+
     m_funcList[m_currentFunc].list_args.append(PyDesc::Argument{"","",""});
     actArgsListView();
 }
 
 void MainWindow::on_pb_argsMinus_clicked()
 {
+    if(m_funcList.isEmpty())
+    {
+        return;
+    }
+
+
     auto selectedRow{ui->tw_args->getSelectedRow()};
     if(selectedRow == -1)
         return;
@@ -209,6 +240,11 @@ void MainWindow::on_pb_argsMinus_clicked()
         //function return values
 void MainWindow::on_pb_returnArgsAdd_clicked()
 {
+    if(m_funcList.isEmpty())
+    {
+        return;
+    }
+
     auto returnList{&(m_funcList[m_currentFunc].list_returnArgs)};
 
     returnList->append(PyDesc::Argument{"Index "+QString::number(std::size(*returnList)),"",""});
@@ -217,6 +253,11 @@ void MainWindow::on_pb_returnArgsAdd_clicked()
 
 void MainWindow::on_pb_returnArgsMinus_clicked()
 {
+    if(m_funcList.isEmpty())
+    {
+        return;
+    }
+
     auto selectedRow{ui->tw_return->getSelectedRow()};
     if(selectedRow == -1)
         return;
@@ -240,6 +281,11 @@ void MainWindow::on_pb_returnArgsMinus_clicked()
 
 void MainWindow::on_te_desc_textChanged()
 {
+    if(m_funcList.isEmpty())
+    {
+        return;
+    }
+
     m_funcList[m_currentFunc].desc = ui->te_desc->toPlainText();
 
     oneElementModified();
@@ -247,6 +293,11 @@ void MainWindow::on_te_desc_textChanged()
 
 void MainWindow::on_le_funcName_textChanged(const QString &arg1)
 {
+    if(m_funcList.isEmpty())
+    {
+        return;
+    }
+
     m_funcList[m_currentFunc].name = arg1;
 
     ui->cb_funcSelec->setItemText(ui->cb_funcSelec->currentIndex(),arg1);
@@ -260,15 +311,15 @@ void MainWindow::on_dw_output_visibilityChanged(bool visible)
     ui->act_enableOutput->setChecked(visible);
 }
 
-void MainWindow::on_actionEnregistrer_sous_triggered()
-{
-    XML::writeObjectListToXMLFile(m_funcList,"FunctionDescriptionFile","default.xml");
-}
-
 
 
 void MainWindow::on_cb_funcSelec_currentIndexChanged(int index)
 {
+    if(m_funcList.isEmpty())
+    {
+        return;
+    }
+
     if(index < 0)
         return;
 
@@ -293,4 +344,73 @@ void MainWindow::on_pb_funcAdd_clicked()
     actFunctionListBox(newIndex);
 
     m_currentFunc = newIndex;
+}
+
+void MainWindow::on_pb_funcMinus_clicked()
+{
+    auto answer{QMessageBox::question(this,"Confirmation","Voulez-vous vraiment supprimer cette fonction ?")};
+
+    if(answer == QMessageBox::No)
+        return;
+
+    m_funcList.removeAt(ui->cb_funcSelec->currentIndex());
+    actFunctionListBox();
+
+    if(m_funcList.isEmpty())
+    {
+        ui->tw_args->setRowCount(0);
+
+        ui->tw_return->setRowCount(0);
+
+        ui->le_funcName->setText("");
+        ui->te_desc->setText("");
+
+        ui->tb_output->setText("");
+    }
+}
+
+
+// ---------------  Actions
+
+void MainWindow::on_act_enableOutput_toggled(bool arg1)
+{
+    ui->dw_output->setVisible(arg1);
+    actArgsListView();
+}
+
+void MainWindow::on_action_saveAs_triggered()
+{
+    QString saveFile{QFileDialog::getSaveFileName(this,"Enregistrer sous","Untitled",QString("PyDocString file (*.")+QString(PYDESCGUI_FILE_EXT)+");; Tous (*)")};
+
+    if(saveFile.isEmpty())
+        return;
+
+    m_currentSavePath = saveFile;
+
+    XML::writeObjectListToXMLFile(m_funcList,m_saveFileDocType,m_currentSavePath);
+}
+
+void MainWindow::on_action_open_triggered()
+{
+    QString openedFile{QFileDialog::getOpenFileName(this,"Ouvrir","",QString("PyDocString file (*.")+QString(PYDESCGUI_FILE_EXT)+");; Tous (*)")};
+
+    if(openedFile.isEmpty())
+        return;
+
+    m_currentSavePath = openedFile;
+    XML::readObjectListFromXMLFile(m_funcList,m_saveFileDocType,openedFile);
+
+    actFunctionListBox();
+    actFuncDescAndName();
+    actArgsListView();
+    actReturnArgsListView();
+}
+
+void MainWindow::on_action_save_triggered()
+{
+    if(m_currentSavePath.isEmpty())
+        on_action_saveAs_triggered();
+
+    if(m_currentSavePath.isEmpty())
+        return;
 }
