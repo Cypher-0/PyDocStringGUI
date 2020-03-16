@@ -153,14 +153,14 @@ QString getFormattedDesc(const FunctionDesc &fDesc)
 
     QString formatedTitle{"**"+title_desc+"**"};
     result += formatedTitle + "\n";
-    Utils::addCharXTimes(result,std::size(formatedTitle));
+    Utils::addCharXTimes(result,formatedTitle.size());
     result += "\n";
 
     result += fDesc.desc + "\n\n";
 
     formatedTitle = "**"+title_args+"**";
     result += formatedTitle + "\n";
-    Utils::addCharXTimes(result,std::size(formatedTitle));
+    Utils::addCharXTimes(result,formatedTitle.size());
     result += "\n";
 
     for(const auto &elem : fDesc.list_args)
@@ -171,15 +171,15 @@ QString getFormattedDesc(const FunctionDesc &fDesc)
     result += "\n";
     formatedTitle = "**"+title_return+"**";
     result += formatedTitle + "\n";
-    Utils::addCharXTimes(result,std::size(formatedTitle));
+    Utils::addCharXTimes(result,formatedTitle.size());
     result += "\n\n";
 
-    if(std::size(fDesc.list_returnArgs) == 1)
+    if(fDesc.list_returnArgs.size() == 1)
     {
         QString desc{(fDesc.list_returnArgs[0].desc.isEmpty())?"-":fDesc.list_returnArgs[0].desc};
         result += "( ***"+fDesc.list_returnArgs[0].type+"*** ) : "+desc+"\n\n";
     }
-    else if(std::size(fDesc.list_returnArgs) > 1)
+    else if(fDesc.list_returnArgs.size() > 1)
     {
         result += "( ***tuple*** ) : \n\n";
 
