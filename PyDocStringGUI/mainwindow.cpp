@@ -209,6 +209,7 @@ void MainWindow::on_pb_argsAdd_clicked()
 {
     if(m_funcList.isEmpty())
     {
+        QMessageBox::warning(this,"Erreur","Veuillez créer une nouvelle fonction avant de pouvoir ajouter des éléments");
         return;
     }
 
@@ -242,6 +243,7 @@ void MainWindow::on_pb_returnArgsAdd_clicked()
 {
     if(m_funcList.isEmpty())
     {
+        QMessageBox::warning(this,"Erreur","Veuillez créer une nouvelle fonction avant de pouvoir ajouter des éléments");
         return;
     }
 
