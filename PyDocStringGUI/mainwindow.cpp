@@ -4,7 +4,9 @@
 #include <QList>
 #include <QInputDialog>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QMessageBox>
+#include <QDateTime>
 
 #include <QDebug>
 
@@ -45,11 +47,27 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     {
         ui->gb_funcDesc->setEnabled(false);
     }
+
+    m_lbl_currentPath = new QLabel{};
+    ui->statusbar->addPermanentWidget(m_lbl_currentPath);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+//ACCESSORS
+
+void MainWindow::setSavePath(QString newPath)
+{
+    if(newPath.isEmpty())
+        return;
+
+    m_currentSavePath = newPath;
+
+    m_lbl_currentPath->setText(QFileInfo{m_currentSavePath}.fileName());
+    ui->statusbar->setToolTip(m_currentSavePath);
 }
 
 void MainWindow::actArgsListView()
@@ -398,9 +416,11 @@ void MainWindow::on_action_saveAs_triggered()
     if(saveFile.isEmpty())
         return;
 
-    m_currentSavePath = saveFile;
+    setSavePath(saveFile);
 
     XML::writeObjectListToXMLFile(m_funcList,m_saveFileDocType,m_currentSavePath);
+
+    ui->statusbar->showMessage("Sauvegardé à "+QDateTime::currentDateTime().toString("hh:mm:ss"));
 }
 
 void MainWindow::on_action_open_triggered()
@@ -410,7 +430,7 @@ void MainWindow::on_action_open_triggered()
     if(openedFile.isEmpty())
         return;
 
-    m_currentSavePath = openedFile;
+    setSavePath(openedFile);
     XML::readObjectListFromXMLFile(m_funcList,m_saveFileDocType,openedFile);
 
     actFunctionListBox();
@@ -426,4 +446,8 @@ void MainWindow::on_action_save_triggered()
 
     if(m_currentSavePath.isEmpty())
         return;
+
+    XML::writeObjectListToXMLFile(m_funcList,m_saveFileDocType,m_currentSavePath);
+
+    ui->statusbar->showMessage("Sauvegardé à "+QDateTime::currentDateTime().toString("hh:mm:ss"));
 }

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "FunctionDescription/functiondesc.h"
 #include <QList>
+#include <QLabel>
 
 #define PYDESCGUI_FILE_EXT "pdsgui"
 
@@ -78,5 +79,9 @@ private:
 
     inline static const QString m_saveFileDocType{"FunctionDescriptionFile"};
     QString m_currentSavePath{""};
+    QLabel *m_lbl_currentPath;
+
+
+    void setSavePath(QString newPath);
 };
 #endif // MAINWINDOW_H
