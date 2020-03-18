@@ -40,6 +40,11 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     actArgsListView();
     actReturnArgsListView();
     actFunctionListBox();
+
+    if(m_funcList.size() == 0)
+    {
+        ui->gb_funcDesc->setEnabled(false);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -319,7 +324,13 @@ void MainWindow::on_cb_funcSelec_currentIndexChanged(int index)
 {
     if(m_funcList.isEmpty())
     {
+        ui->gb_funcDesc->setEnabled(false);
+
         return;
+    }
+    else
+    {
+        ui->gb_funcDesc->setEnabled(true);
     }
 
     if(index < 0)

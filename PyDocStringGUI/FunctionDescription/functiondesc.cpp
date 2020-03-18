@@ -151,6 +151,8 @@ QString getFormattedDesc(const FunctionDesc &fDesc)
 
     QString result{"\"\"\"\n"};
 
+    //description
+
     QString formatedTitle{"**"+title_desc+"**"};
     result += formatedTitle + "\n";
     Utils::addCharXTimes(result,formatedTitle.size());
@@ -158,26 +160,42 @@ QString getFormattedDesc(const FunctionDesc &fDesc)
 
     result += fDesc.desc + "\n\n";
 
+    //arguments
+
     formatedTitle = "**"+title_args+"**";
     result += formatedTitle + "\n";
     Utils::addCharXTimes(result,formatedTitle.size());
     result += "\n";
 
-    for(const auto &elem : fDesc.list_args)
+    if(fDesc.list_args.size() == 0)
     {
-        result += "- **`"+elem.name+"`** ( *"+elem.type+"* ): "+elem.desc+"\n\n";
+        result += "( ***void*** )\n\n";
+    }
+    else
+    {
+        for(const auto &elem : fDesc.list_args)
+        {
+            result += "- **`"+elem.name+"`** ( *"+elem.type+"* ): "+elem.desc+"\n\n";
+        }
     }
 
     result += "\n";
+
+    //return values
+
     formatedTitle = "**"+title_return+"**";
     result += formatedTitle + "\n";
     Utils::addCharXTimes(result,formatedTitle.size());
     result += "\n\n";
 
-    if(fDesc.list_returnArgs.size() == 1)
+    if(fDesc.list_returnArgs.size() == 0)
+    {
+        result += "( ***void*** )";
+    }
+    else if(fDesc.list_returnArgs.size() == 1)
     {
         QString desc{(fDesc.list_returnArgs[0].desc.isEmpty())?"-":fDesc.list_returnArgs[0].desc};
-        result += "( ***"+fDesc.list_returnArgs[0].type+"*** ) : "+desc+"\n\n";
+        result += "( ***"+fDesc.list_returnArgs[0].type+"*** ) : "+desc;
     }
     else if(fDesc.list_returnArgs.size() > 1)
     {
@@ -186,12 +204,11 @@ QString getFormattedDesc(const FunctionDesc &fDesc)
         for(const auto &elem : fDesc.list_returnArgs)
         {
             QString desc{(elem.desc.isEmpty())?"-":elem.desc};
-            result += "- "+elem.name+" : ( ***"+elem.type+"*** ): "+desc+"\n\n";
+            result += "- "+elem.name+" : ( ***"+elem.type+"*** ): "+desc;
         }
     }
-    else{}
 
-    result += "\"\"\"";
+    result += "\n\n\"\"\"";
 
     return result;
 }
