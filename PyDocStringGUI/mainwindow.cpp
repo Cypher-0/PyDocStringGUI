@@ -15,7 +15,11 @@
 #include "FunctionDescription/xmlListManagement.h"
 #include "advancedtablewidget.h"
 
+#include "ProgSettings/Setting.hpp"
+
 #define cout qDebug()
+
+#define NOUS_N_AVONS_PLUS_5_ANS 0
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -69,6 +73,26 @@ void MainWindow::setSavePath(QString newPath)
     m_lbl_currentPath->setText(QFileInfo{m_currentSavePath}.fileName());
     ui->statusbar->setToolTip(m_currentSavePath);
 }
+
+
+
+
+
+struct Panoplie
+{
+    Screen screen1;
+    Screen screen2;
+    Mouse mouse;
+    Keyboard keyb;
+    Coffee_tea utils;
+};
+
+
+
+
+
+
+
 
 void MainWindow::actArgsListView()
 {
@@ -420,7 +444,7 @@ void MainWindow::on_action_saveAs_triggered()
 
     XML::writeObjectListToXMLFile(m_funcList,m_saveFileDocType,m_currentSavePath);
 
-    ui->statusbar->showMessage("Sauvegardé à "+QDateTime::currentDateTime().toString("hh:mm:ss"));
+    ui->statusbar->showMessage("Sauvegardé à "+QDateTime::currentDateTime().toString("hh:mm:ss"),300000);
 }
 
 void MainWindow::on_action_open_triggered()
@@ -449,5 +473,5 @@ void MainWindow::on_action_save_triggered()
 
     XML::writeObjectListToXMLFile(m_funcList,m_saveFileDocType,m_currentSavePath);
 
-    ui->statusbar->showMessage("Sauvegardé à "+QDateTime::currentDateTime().toString("hh:mm:ss"));
+    ui->statusbar->showMessage("Sauvegardé à "+QDateTime::currentDateTime().toString("hh:mm:ss"),300000);
 }

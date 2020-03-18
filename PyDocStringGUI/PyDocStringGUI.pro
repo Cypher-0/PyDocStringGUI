@@ -19,6 +19,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     FunctionDescription/functiondesc.cpp \
+    ProgSettings/Setting.cpp \
     advancedtablewidget.cpp \
     main.cpp \
     mainwindow.cpp
@@ -27,6 +28,7 @@ HEADERS += \
     FunctionDescription/functiondesc.h \
     FunctionDescription/xmlListManagement.h \
     FunctionDescription/xmlProps.h \
+    ProgSettings/Setting.hpp \
     advancedtablewidget.h \
     mainwindow.h \
 
