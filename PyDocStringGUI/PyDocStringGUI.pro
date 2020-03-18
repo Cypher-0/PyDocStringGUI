@@ -29,6 +29,7 @@ HEADERS += \
     FunctionDescription/xmlListManagement.h \
     FunctionDescription/xmlProps.h \
     ProgSettings/Setting.hpp \
+    ProgSettings/xmlPropsSet.h \
     advancedtablewidget.h \
     mainwindow.h \
 

@@ -26,6 +26,6 @@ namespace XMLProps
     }
 };
 
-}
+};
 
 #endif // XMLPROPS_H

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "FunctionDescription/functiondesc.h"
+#include "ProgSettings/Setting.hpp"
 #include <QList>
 #include <QLabel>
 
@@ -32,6 +33,8 @@ private slots:
     void actFuncDescAndName();
 
     void oneElementModified();
+
+    void loadFromFile(QString path);
 
 
 
@@ -81,6 +84,16 @@ private:
     QString m_currentSavePath{""};
     QLabel *m_lbl_currentPath;
 
+    //settings
+    QString m_settingPath{"settings.xml"};
+    QString m_settingDocType{"ProgSettings"};
+    Config::Setting<QString> m_set_lastFile{{"lastFile"},{""}};
+
+
+    void readSettings();
+    void saveSettings();
+
+    //OTHERS
 
     void setSavePath(QString newPath);
 };

@@ -54,10 +54,16 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     m_lbl_currentPath = new QLabel{};
     ui->statusbar->addPermanentWidget(m_lbl_currentPath);
+
+    readSettings();
+    m_currentSavePath = m_set_lastFile.value;
+    loadFromFile(m_currentSavePath);
 }
 
 MainWindow::~MainWindow()
 {
+    saveSettings();
+
     delete ui;
 }
 
@@ -69,30 +75,75 @@ void MainWindow::setSavePath(QString newPath)
         return;
 
     m_currentSavePath = newPath;
+    m_set_lastFile.value = m_currentSavePath;
 
     m_lbl_currentPath->setText(QFileInfo{m_currentSavePath}.fileName());
     ui->statusbar->setToolTip(m_currentSavePath);
 }
 
+//settings
 
-
-
-
-struct Panoplie
+void MainWindow::readSettings()
 {
-    Screen screen1;
-    Screen screen2;
-    Mouse mouse;
-    Keyboard keyb;
-    Coffee_tea utils;
-};
+    QDomDocument doc;
+
+    QFile file(m_settingPath);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qDebug() << "Cannot open : <" << m_settingPath << ">";
+        return;
+    }
+
+    //load datas into the dom doc
+    doc.setContent(&file);
+    file.close();
+
+    QDomElement rootNode {doc.documentElement()};
+
+    if(
+            doc.doctype().name() != m_settingDocType || //if the file is not corresponding to expecting one
+            rootNode.tagName() != XML::XMLProps::Settings::node_settingsListRoot
+      )
+    {
+        qDebug() << "Cannot read XML file : root node name not corresponding or doctype not corresponding";
+    }
+
+    Config::readFromXmlNode(m_set_lastFile,rootNode);
+}
+
+void MainWindow::saveSettings()
+{
+    using namespace XML;
+    //create Doc
+    QDomImplementation domImpl = QDomDocument().implementation();
+    QDomDocument doc(m_settingDocType);
+    QDomProcessingInstruction instruction=doc.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\"");
+
+    QDomElement rootNode = doc.createElement(XMLProps::Settings::node_settingsListRoot);
+    doc.appendChild(rootNode);
+
+    doc.insertBefore(instruction,rootNode);
+    //doc created with root node and header
+
+    Config::writeToXmlNode(m_set_lastFile,doc,rootNode);
 
 
+    //target file to save XML Dom Doc
+    auto file = QFile(m_settingPath);
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        qDebug() << "Cannot open : <" << m_settingPath << ">";
+        return;
+    }
+
+    QTextStream fileStream(&file);
+    doc.save(fileStream,4);
+
+    file.close();
+}
 
 
-
-
-
+// refresh view
 
 void MainWindow::actArgsListView()
 {
@@ -138,7 +189,23 @@ void MainWindow::actReturnArgsListView()
     }
 }
 
-//---------------------------------------------------------------------- SLOTS
+//load from file
+
+void MainWindow::loadFromFile(QString path)
+{
+    if(path.isEmpty())
+        return;
+
+    setSavePath(path);
+    XML::readObjectListFromXMLFile(m_funcList,m_saveFileDocType,path);
+
+    actFunctionListBox();
+    actFuncDescAndName();
+    actArgsListView();
+    actReturnArgsListView();
+}
+
+//---------------------------------------------------------------------- Qt SLOTS
 
     //tableWidget cell changed
 
@@ -189,7 +256,7 @@ void MainWindow::argsSwitchRows(int startRow,int endRow)
 
     auto argsList{&(m_funcList[m_currentFunc].list_args)};
 
-    argsList->swapItemsAt(startRow,endRow);
+    argsList->swap(startRow,endRow);
 
     actArgsListView();
 
@@ -203,7 +270,7 @@ void MainWindow::returnArgsSwitchRows(int startRow,int endRow)
 
     auto returnList{&(m_funcList[m_currentFunc].list_returnArgs)};
 
-    returnList->swapItemsAt(startRow,endRow);
+    returnList->swap(startRow,endRow);
 
     (*returnList)[startRow].name = "Index "+QString::number(startRow);
     (*returnList)[endRow].name = "Index "+QString::number(endRow);
@@ -435,7 +502,8 @@ void MainWindow::on_act_enableOutput_toggled(bool arg1)
 
 void MainWindow::on_action_saveAs_triggered()
 {
-    QString saveFile{QFileDialog::getSaveFileName(this,"Enregistrer sous","Untitled",QString("PyDocString file (*.")+QString(PYDESCGUI_FILE_EXT)+");; Tous (*)")};
+    cout << QFileInfo(m_currentSavePath).absoluteDir().path();
+    QString saveFile{QFileDialog::getSaveFileName(this,"Enregistrer sous",QFileInfo(m_currentSavePath).absoluteDir().path()+"/Untitled."+QString(PYDESCGUI_FILE_EXT),QString("PyDocString file (*.")+QString(PYDESCGUI_FILE_EXT)+");; Tous (*)")};
 
     if(saveFile.isEmpty())
         return;
@@ -449,18 +517,10 @@ void MainWindow::on_action_saveAs_triggered()
 
 void MainWindow::on_action_open_triggered()
 {
-    QString openedFile{QFileDialog::getOpenFileName(this,"Ouvrir","",QString("PyDocString file (*.")+QString(PYDESCGUI_FILE_EXT)+");; Tous (*)")};
+    cout << QFileInfo(m_currentSavePath).absoluteDir().path();
+    QString openedFile{QFileDialog::getOpenFileName(this,"Ouvrir",QFileInfo(m_currentSavePath).absoluteDir().path(),QString("PyDocString file (*.")+QString(PYDESCGUI_FILE_EXT)+");; Tous (*)")};
 
-    if(openedFile.isEmpty())
-        return;
-
-    setSavePath(openedFile);
-    XML::readObjectListFromXMLFile(m_funcList,m_saveFileDocType,openedFile);
-
-    actFunctionListBox();
-    actFuncDescAndName();
-    actArgsListView();
-    actReturnArgsListView();
+    loadFromFile(openedFile);
 }
 
 void MainWindow::on_action_save_triggered()
