@@ -20,6 +20,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     FunctionDescription/functiondesc.cpp \
     ProgSettings/Setting.cpp \
+    PythonParser/PythonParser.cpp \
+    PythonParser/PythonParserUtils.cpp \
     advancedtablewidget.cpp \
     main.cpp \
     mainwindow.cpp
@@ -30,6 +32,8 @@ HEADERS += \
     FunctionDescription/xmlProps.h \
     ProgSettings/Setting.hpp \
     ProgSettings/xmlPropsSet.h \
+    PythonParser/PythonParser.hpp \
+    PythonParser/PythonParserUtils.h \
     advancedtablewidget.h \
     mainwindow.h \
 

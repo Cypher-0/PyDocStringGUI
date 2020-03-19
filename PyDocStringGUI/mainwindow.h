@@ -6,6 +6,7 @@
 #include "ProgSettings/Setting.hpp"
 #include <QList>
 #include <QLabel>
+#include <QDir>
 
 #define PYDESCGUI_FILE_EXT "pdsgui"
 
@@ -74,24 +75,32 @@ private slots:
 
     void on_action_save_triggered();
 
+    void on_action_initFromPyFiles_triggered();
+
 private:
     Ui::MainWindow *ui;
 
     int m_currentFunc{0};
     QList<PyDesc::FunctionDesc> m_funcList{};
 
+    //save
+
     inline static const QString m_saveFileDocType{"FunctionDescriptionFile"};
     QString m_currentSavePath{""};
     QLabel *m_lbl_currentPath;
+    inline static const QString m_defaultFile{QDir::currentPath()+"/Default.xml"};
 
     //settings
-    QString m_settingPath{"settings.xml"};
+    QString m_settingPath{QDir::currentPath()+"/settings.xml"};
     QString m_settingDocType{"ProgSettings"};
     Config::Setting<QString> m_set_lastFile{{"lastFile"},{""}};
 
 
     void readSettings();
     void saveSettings();
+
+    //load from Python
+    QString m_lastPyFile{};
 
     //OTHERS
 

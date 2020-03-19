@@ -334,7 +334,7 @@
      <x>0</x>
      <y>0</y>
      <width>826</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFen_tres">
@@ -350,6 +350,7 @@
     <addaction name="action_open"/>
     <addaction name="action_save"/>
     <addaction name="action_saveAs"/>
+    <addaction name="action_initFromPyFiles"/>
    </widget>
    <addaction name="menuFichiers"/>
    <addaction name="menuFen_tres"/>
@@ -418,6 +419,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="action_initFromPyFiles">
+   <property name="text">
+    <string>Init depuis un fichier Python</string>
    </property>
   </action>
  </widget>

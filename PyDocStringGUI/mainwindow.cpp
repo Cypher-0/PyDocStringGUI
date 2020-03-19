@@ -14,6 +14,7 @@
 #include "FunctionDescription/functiondesc.h"
 #include "FunctionDescription/xmlListManagement.h"
 #include "advancedtablewidget.h"
+#include "PythonParser/PythonParser.hpp"
 
 #include "ProgSettings/Setting.hpp"
 
@@ -28,20 +29,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(ui->tw_args,SIGNAL(switchRows(int,int)),this,SLOT(argsSwitchRows(int,int)));
     connect(ui->tw_return,SIGNAL(switchRows(int,int)),this,SLOT(returnArgsSwitchRows(int,int)));
 
-
-    /*QList<PyDesc::Argument> list_args{{"client","ModbusPLC","Automate sur lequel lire le bit"},{"bit","int","Adresse sur laquelle lire le bit"},
-                                      {"Value","int","Adresse sur laquelle lire le bit"},{"Value","int","Adresse sur laquelle lire le bit"}};
-    QList<PyDesc::Argument> list_returnArgs{{"Index 0","int","Valeur lue sur l'automate"}};
-    QList<PyDesc::Argument> list_returnArgs2{{"Index 0","int","Valeur lue sur l'automate"},{"Index 1","str","nom test"}};
-
-    m_funcList.append({"writeBit","Permet d'écrire un bit sur l'automate",list_args,list_returnArgs});
-    m_funcList.append({"writeWord","Permet d'écrire un mot sur l'automate",list_args,list_returnArgs2});
-    ui->le_funcName->setText("writeBit");
-    ui->te_desc->setText("Permet d'écrire un bit sur l'automate");
-
-    XML::writeObjectListToXMLFile(m_funcList,"FunctionDescriptionFile","default.xml");*/
-
-    XML::readObjectListFromXMLFile(m_funcList,m_saveFileDocType,"default.xml");
+    XML::readObjectListFromXMLFile(m_funcList,m_saveFileDocType,m_defaultFile);
 
     actArgsListView();
     actReturnArgsListView();
@@ -56,8 +44,30 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->statusbar->addPermanentWidget(m_lbl_currentPath);
 
     readSettings();
+    cout << "Last file : <" <<m_set_lastFile.value << ">";
     m_currentSavePath = m_set_lastFile.value;
-    loadFromFile(m_currentSavePath);
+
+    if(m_currentSavePath.isEmpty())
+        loadFromFile(m_defaultFile);
+    else
+        loadFromFile(m_currentSavePath);
+
+    //-------------- TESTS
+
+    /*QList<PyDesc::Argument> list_args{{"client","ModbusPLC","Automate sur lequel lire le bit"},{"bit","int","Adresse sur laquelle lire le bit"},
+                                      {"Value","int","Adresse sur laquelle lire le bit"},{"Value","int","Adresse sur laquelle lire le bit"}};
+    QList<PyDesc::Argument> list_returnArgs{{"Index 0","int","Valeur lue sur l'automate"}};
+    QList<PyDesc::Argument> list_returnArgs2{{"Index 0","int","Valeur lue sur l'automate"},{"Index 1","str","nom test"}};
+
+    m_funcList.append({"writeBit","Permet d'écrire un bit sur l'automate",list_args,list_returnArgs});
+    m_funcList.append({"writeWord","Permet d'écrire un mot sur l'automate",list_args,list_returnArgs2});
+    ui->le_funcName->setText("writeBit");
+    ui->te_desc->setText("Permet d'écrire un bit sur l'automate");
+
+    XML::writeObjectListToXMLFile(m_funcList,"FunctionDescriptionFile","default.xml");*/
+
+    //QString pyFile{"/home/mathieu/Documents/TRAVAIL/S4P/Supervision/s4p_supervision/Sources/PLC/Variables.py"};
+    //PyDesc::PyFileParser::findFunctionsIndexes(pyFile);
 }
 
 MainWindow::~MainWindow()
@@ -508,6 +518,11 @@ void MainWindow::on_action_saveAs_triggered()
     if(saveFile.isEmpty())
         return;
 
+    if(!saveFile.endsWith(QString{"."}+PYDESCGUI_FILE_EXT))
+    {
+        saveFile += QString{"."}+PYDESCGUI_FILE_EXT;
+    }
+
     setSavePath(saveFile);
 
     XML::writeObjectListToXMLFile(m_funcList,m_saveFileDocType,m_currentSavePath);
@@ -534,4 +549,21 @@ void MainWindow::on_action_save_triggered()
     XML::writeObjectListToXMLFile(m_funcList,m_saveFileDocType,m_currentSavePath);
 
     ui->statusbar->showMessage("Sauvegardé à "+QDateTime::currentDateTime().toString("hh:mm:ss"),300000);
+}
+
+void MainWindow::on_action_initFromPyFiles_triggered()
+{
+    auto basePath{(m_lastPyFile.isEmpty())?QFileInfo(m_currentSavePath).absoluteDir().path():m_lastPyFile};
+    QString pyFile{QFileDialog::getOpenFileName(this,"Ouvrir",basePath,QString("PyDocString file (*.py);; Tous (*)"))};
+    if(pyFile.isEmpty())
+        return;
+
+    m_lastPyFile = pyFile;
+
+    m_funcList = PyDesc::PyFileParser::findFunctionsIndexes(pyFile);
+
+    actFunctionListBox();
+    actFuncDescAndName();
+    actArgsListView();
+    actReturnArgsListView();
 }

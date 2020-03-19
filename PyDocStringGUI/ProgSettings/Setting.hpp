@@ -27,8 +27,8 @@ void writeToXmlNode(const Setting<T> &var,QDomDocument &doc, QDomElement &root)
     using namespace XML;
 
     QDomElement node_varRoot = doc.createElement(XMLProps::Settings::node_settingRoot);
-    node_varRoot.setAttribute(XMLProps::Settings::attrs_name,var.name);
     node_varRoot.setAttribute(XMLProps::Settings::attrs_value,QString("%1").arg(var.value));
+    node_varRoot.setAttribute(XMLProps::Settings::attrs_name,var.name);
     root.appendChild(node_varRoot);
 }
 
