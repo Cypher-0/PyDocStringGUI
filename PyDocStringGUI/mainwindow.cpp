@@ -554,7 +554,7 @@ void MainWindow::on_action_save_triggered()
 void MainWindow::on_action_initFromPyFiles_triggered()
 {
     auto basePath{(m_lastPyFile.isEmpty())?QFileInfo(m_currentSavePath).absoluteDir().path():m_lastPyFile};
-    QString pyFile{QFileDialog::getOpenFileName(this,"Ouvrir",basePath,QString("PyDocString file (*.py);; Tous (*)"))};
+    QString pyFile{QFileDialog::getOpenFileName(this,"Ouvrir",basePath,QString("python file (*.py);; Tous (*)"))};
     if(pyFile.isEmpty())
         return;
 
