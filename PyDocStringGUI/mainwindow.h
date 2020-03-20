@@ -77,6 +77,8 @@ private slots:
 
     void on_action_initFromPyFiles_triggered();
 
+    void on_toolBut_pyFile_clicked();
+
 private:
     Ui::MainWindow *ui;
 

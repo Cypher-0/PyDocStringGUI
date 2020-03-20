@@ -98,6 +98,9 @@ void MainWindow::refreshAllViews()
     actFuncDescAndName();
     actArgsListView();
     actReturnArgsListView();
+
+    ui->le_pyFile->setText(m_userProj.associatedPyFile);
+    ui->le_pyFile->setToolTip(m_userProj.associatedPyFile);
 }
 
 //MISC
@@ -612,3 +615,17 @@ void MainWindow::on_action_initFromPyFiles_triggered()
 
     refreshAllViews();
 }
+
+void MainWindow::on_toolBut_pyFile_clicked()
+{
+    auto basePath{(m_userProj.associatedPyFile.isEmpty())?QFileInfo(m_currentSavePath).absoluteDir().path():QFileInfo(m_userProj.associatedPyFile).absoluteDir().path()};
+    QString pyFile{QFileDialog::getOpenFileName(this,"Ouvrir",basePath,QString("python file (*.py);; Tous (*)"))};
+
+    if(pyFile.isEmpty())
+        return;
+
+    m_userProj.associatedPyFile = pyFile;
+
+    ui->le_pyFile->setText(pyFile);
+}
+
