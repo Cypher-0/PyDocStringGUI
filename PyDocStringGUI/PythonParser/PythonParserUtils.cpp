@@ -71,7 +71,7 @@ namespace Utils
         for(auto elem : tempSplit)
         {
             auto arg = elem.remove(QRegularExpression("[\\W]{1,}.$"));
-            if(arg == "self")
+            if(arg == "self" || std::size(arg) == 0)
                 continue;
 
             argsList.append(Argument{std::move(arg)});
