@@ -1,8 +1,8 @@
+#include "PythonParser/PythonParser.hpp"
 #include <QString>
 #include <QRegularExpression>
 #include <QList>
 #include "FunctionDescription/functiondesc.h"
-#include "PythonParser/PythonParserUtils.h"
 
 #include <QDebug>
 #define cout qDebug()
@@ -81,6 +81,31 @@ namespace Utils
         out.list_args = std::move(argsList);
 
         return out;
+    }
+
+    std::tuple<int, int> getDocStringStartEndLines(int defLine,int nextDefLine,const QList<int> &linesOfLim)
+    {
+        int start{-1},end{-1};
+
+        bool firstDocStringLim{true};
+        for(const auto &limLine : linesOfLim)
+        {
+            if(limLine > defLine && limLine < nextDefLine)
+            {
+                if(firstDocStringLim)
+                {
+                    start = limLine;
+                    firstDocStringLim = false;
+                }
+                else
+                {
+                    end = limLine;
+                    break;
+                }
+            }
+        }
+
+        return {std::move(start),std::move(end)};
     }
 }
 

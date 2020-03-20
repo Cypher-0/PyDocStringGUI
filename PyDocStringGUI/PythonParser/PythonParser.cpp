@@ -1,5 +1,4 @@
 #include "PythonParser.hpp"
-#include "PythonParserUtils.h"
 
 #include <QFile>
 #include <QList>
@@ -51,6 +50,11 @@ namespace PyFileParser
         }
 
         return outList;
+    }
+
+    void writeFuncDescToPyFile(const UserProject::UserProject proj)
+    {
+
     }
 }
 
