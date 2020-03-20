@@ -29,13 +29,14 @@ SOURCES += \
 
 HEADERS += \
     FunctionDescription/functiondesc.h \
-    FunctionDescription/xmlListManagement.h \
     FunctionDescription/xmlProps.h \
     ProgSettings/Setting.hpp \
     ProgSettings/xmlPropsSet.h \
     PythonParser/PythonParser.hpp \
     PythonParser/PythonParserUtils.h \
     UserProject/UserProject.h \
+    UserProject/xmlListManagement.h \
+    UserProject/xmlPropsProj.h \
     advancedtablewidget.h \
     mainwindow.h \
 

@@ -7,22 +7,16 @@
 
 #include "FunctionDescription/functiondesc.h"
 
-namespace PyDesc
+namespace UserProject
 {
 
-namespace PyFileParser
+struct UserProject
 {
+    QList<PyDesc::FunctionDesc> funcList{};
+    QString associatedPyFile{};
+};
 
-namespace Utils
-{
-    QList<int> indexesOf(const QString &str,const QRegularExpression &regex);
-
-    QList<int> linesOf(const QString &text,const QRegularExpression &regex);
-
-    FunctionDesc getFunctionFromLine(QString line);
-}
-
-}
+void writeProjectToFile(const UserProject &proj,QString iDocType,QString iPath);
 
 }
 

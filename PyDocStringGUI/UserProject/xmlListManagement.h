@@ -1,8 +1,6 @@
 #ifndef XMLMANAGEMENT_H
 #define XMLMANAGEMENT_H
 
-#include "functiondesc.h"
-
 #include <QDomImplementation>
 #include <QDomDocument>
 #include <QTextStream>
@@ -115,7 +113,7 @@ static void readObjectListFromXMLFile(QList<T> &outList,QString iDocType,QString
             rootNode.tagName() != T::className
       )
     {
-        qDebug() << "Cannot read XML file : root node name not corresponding or doctype not corresponding";
+        qDebug() << "May can not read XML file  <"<< iPath <<": root node name not corresponding or doctype not corresponding";
     }
 
     readObjectListFromXMLNode<T>(outList,rootNode);

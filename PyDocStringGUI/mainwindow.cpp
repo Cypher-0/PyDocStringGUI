@@ -12,15 +12,16 @@
 
 #include "FunctionDescription/xmlProps.h"
 #include "FunctionDescription/functiondesc.h"
-#include "FunctionDescription/xmlListManagement.h"
+#include "UserProject/xmlListManagement.h"
 #include "advancedtablewidget.h"
 #include "PythonParser/PythonParser.hpp"
 
 #include "ProgSettings/Setting.hpp"
 
+#include "UserProject/UserProject.h"
+
 #define cout qDebug()
 
-#define NOUS_N_AVONS_PLUS_5_ANS 0
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -541,7 +542,11 @@ void MainWindow::on_action_saveAs_triggered()
 
     setSavePath(saveFile);
 
-    XML::writeObjectListToXMLFile(m_funcList,m_saveFileDocType,m_currentSavePath);
+    UserProject::UserProject proj{m_funcList,"Test.py"};
+
+    UserProject::writeProjectToFile(proj,m_saveFileDocType,saveFile);
+
+    //XML::writeObjectListToXMLFile(m_funcList,m_saveFileDocType,m_currentSavePath);
 
     ui->statusbar->showMessage("Sauvegardé à "+QDateTime::currentDateTime().toString("hh:mm:ss"),300000);
 }
