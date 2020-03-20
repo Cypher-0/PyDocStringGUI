@@ -2,6 +2,7 @@
 #include <QRegularExpression>
 #include <QList>
 #include "FunctionDescription/functiondesc.h"
+#include "PythonParser/PythonParserUtils.h"
 
 #include <QDebug>
 #define cout qDebug()

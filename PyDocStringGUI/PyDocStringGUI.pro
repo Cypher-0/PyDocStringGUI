@@ -22,6 +22,7 @@ SOURCES += \
     ProgSettings/Setting.cpp \
     PythonParser/PythonParser.cpp \
     PythonParser/PythonParserUtils.cpp \
+    UserProject/UserProject.cpp \
     advancedtablewidget.cpp \
     main.cpp \
     mainwindow.cpp
@@ -34,6 +35,7 @@ HEADERS += \
     ProgSettings/xmlPropsSet.h \
     PythonParser/PythonParser.hpp \
     PythonParser/PythonParserUtils.h \
+    UserProject/UserProject.h \
     advancedtablewidget.h \
     mainwindow.h \
 

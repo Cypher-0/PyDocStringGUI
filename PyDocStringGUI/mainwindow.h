@@ -24,19 +24,18 @@ public:
 
 private slots:
 
-    void argsSwitchRows(int startRow,int endRow);
-    void returnArgsSwitchRows(int startRow,int endRow);
-
     void actArgsListView();
     void actReturnArgsListView();
+
+    void loadFromFile(QString path);
+
+    void argsSwitchRows(int startRow,int endRow);//switch args rows
+    void returnArgsSwitchRows(int startRow,int endRow); //switch return args rows
 
     void actFunctionListBox(int newIndex = -1);
     void actFuncDescAndName();
 
     void oneElementModified();
-
-    void loadFromFile(QString path);
-
 
 
     void on_tw_args_cellChanged(int row, int column);
@@ -89,6 +88,9 @@ private:
     QString m_currentSavePath{""};
     QLabel *m_lbl_currentPath;
     inline static const QString m_defaultFile{QDir::currentPath()+"/Default.xml"};
+
+    void saveProjectToFile(QString path);
+    void loadProjectFromFile(QString path);
 
     //settings
     QString m_settingPath{QDir::currentPath()+"/settings.xml"};

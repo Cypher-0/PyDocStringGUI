@@ -91,7 +91,35 @@ void MainWindow::setSavePath(QString newPath)
     ui->statusbar->setToolTip(m_currentSavePath);
 }
 
-//settings
+//MISC
+
+    //project loading/saving
+//load from file
+
+void MainWindow::loadFromFile(QString path)
+{
+    if(path.isEmpty())
+        return;
+
+    setSavePath(path);
+    XML::readObjectListFromXMLFile(m_funcList,m_saveFileDocType,path);
+
+    actFunctionListBox();
+    actFuncDescAndName();
+    actArgsListView();
+    actReturnArgsListView();
+}
+void MainWindow::saveProjectToFile(QString path)
+{
+
+}
+
+void MainWindow::loadProjectFromFile(QString path)
+{
+
+}
+
+    //settings
 
 void MainWindow::readSettings()
 {
@@ -153,7 +181,7 @@ void MainWindow::saveSettings()
 }
 
 
-// refresh view
+    // refresh view
 
 void MainWindow::actArgsListView()
 {
@@ -199,66 +227,9 @@ void MainWindow::actReturnArgsListView()
     }
 }
 
-//load from file
-
-void MainWindow::loadFromFile(QString path)
-{
-    if(path.isEmpty())
-        return;
-
-    setSavePath(path);
-    XML::readObjectListFromXMLFile(m_funcList,m_saveFileDocType,path);
-
-    actFunctionListBox();
-    actFuncDescAndName();
-    actArgsListView();
-    actReturnArgsListView();
-}
-
-//---------------------------------------------------------------------- Qt SLOTS
-
-    //tableWidget cell changed
-
-void MainWindow::on_tw_args_cellChanged(int row, int column)
-{
-    auto newText{ui->tw_args->item(row,column)->text()};
-
-    if(m_funcList.isEmpty())
-        return;
-
-    auto argsList{&(m_funcList[m_currentFunc].list_args)};
-
-    if(column == 0)
-        (*argsList)[row].name = newText;
-    else if(column == 1)
-        (*argsList)[row].type = newText;
-    else if(column == 2)
-        (*argsList)[row].desc = newText;
-
-    oneElementModified();
-}
-
-void MainWindow::on_tw_return_cellChanged(int row, int column)
-{
-    auto newText{ui->tw_return->item(row,column)->text()};
-
-    if(m_funcList.isEmpty())
-        return;
-
-    auto argsList{&(m_funcList[m_currentFunc].list_returnArgs)};
-
-    (*argsList)[row].name = "Index "+QString::number(row);
-
-    if(column == 0)
-        (*argsList)[row].type = newText;
-    else if(column == 1)
-        (*argsList)[row].desc = newText;
-
-    oneElementModified();
-}
-
     //swap rows
 
+//switch args rows
 void MainWindow::argsSwitchRows(int startRow,int endRow)
 {
     if(m_funcList.isEmpty())
@@ -273,6 +244,7 @@ void MainWindow::argsSwitchRows(int startRow,int endRow)
     oneElementModified();
 }
 
+//switch return args rows
 void MainWindow::returnArgsSwitchRows(int startRow,int endRow)
 {
     if(m_funcList.isEmpty())
@@ -325,6 +297,49 @@ void MainWindow::oneElementModified()
 
     ui->tb_output->setPlainText(PyDesc::getFormattedDesc(m_funcList[m_currentFunc]));
 }
+
+//---------------------------------------------------------------------- Qt SLOTS
+
+    //tableWidget cell changed
+
+void MainWindow::on_tw_args_cellChanged(int row, int column)
+{
+    auto newText{ui->tw_args->item(row,column)->text()};
+
+    if(m_funcList.isEmpty())
+        return;
+
+    auto argsList{&(m_funcList[m_currentFunc].list_args)};
+
+    if(column == 0)
+        (*argsList)[row].name = newText;
+    else if(column == 1)
+        (*argsList)[row].type = newText;
+    else if(column == 2)
+        (*argsList)[row].desc = newText;
+
+    oneElementModified();
+}
+
+void MainWindow::on_tw_return_cellChanged(int row, int column)
+{
+    auto newText{ui->tw_return->item(row,column)->text()};
+
+    if(m_funcList.isEmpty())
+        return;
+
+    auto argsList{&(m_funcList[m_currentFunc].list_returnArgs)};
+
+    (*argsList)[row].name = "Index "+QString::number(row);
+
+    if(column == 0)
+        (*argsList)[row].type = newText;
+    else if(column == 1)
+        (*argsList)[row].desc = newText;
+
+    oneElementModified();
+}
+
 
     //add / del rows
 
@@ -431,13 +446,14 @@ void MainWindow::on_le_funcName_textChanged(const QString &arg1)
     oneElementModified();
 }
 
-        //misc
+    //out window
 void MainWindow::on_dw_output_visibilityChanged(bool visible)
 {
     ui->act_enableOutput->setChecked(visible);
 }
 
 
+    //function management
 
 void MainWindow::on_cb_funcSelec_currentIndexChanged(int index)
 {
@@ -550,6 +566,8 @@ void MainWindow::on_action_save_triggered()
 
     ui->statusbar->showMessage("Sauvegardé à "+QDateTime::currentDateTime().toString("hh:mm:ss"),300000);
 }
+
+    //Python
 
 void MainWindow::on_action_initFromPyFiles_triggered()
 {
