@@ -18,6 +18,8 @@ struct UserProject
 
 void writeProjectToFile(const UserProject &proj,QString iDocType,QString iPath);
 
+UserProject readProjectFromFile(QString iDocType,QString iPath);
+
 }
 
 #endif // PYTHONPARSERUTILS_H

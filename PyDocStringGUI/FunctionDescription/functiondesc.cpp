@@ -204,7 +204,7 @@ QString getFormattedDesc(const FunctionDesc &fDesc)
         for(const auto &elem : fDesc.list_returnArgs)
         {
             QString desc{(elem.desc.isEmpty())?"-":elem.desc};
-            result += "- "+elem.name+" : ( ***"+elem.type+"*** ): "+desc;
+            result += "- "+elem.name+" : ( ***"+elem.type+"*** ): "+desc+"\n";
         }
     }
 

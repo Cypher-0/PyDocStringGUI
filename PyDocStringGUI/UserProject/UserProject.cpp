@@ -43,4 +43,38 @@ void writeProjectToFile(const UserProject &proj,QString iDocType,QString iPath)
     file.close();
 }
 
+UserProject readProjectFromFile(QString iDocType,QString iPath)
+{
+    QDomDocument doc;
+
+    QFile file(iPath);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qDebug() << "Cannot open : <" << iPath << ">";
+        return UserProject{};
+    }
+
+    //load datas into the dom doc
+    doc.setContent(&file);
+    file.close();
+
+    QDomElement rootNode {doc.documentElement()};
+
+    if(
+            doc.doctype().name() != iDocType || //if the file is not corresponding to expecting one
+            rootNode.tagName() != XML::XMLProps::UserProject::node_userProjectRoot
+      )
+    {
+        qDebug() << "Cannot read XML file  <"<< iPath <<": root node name not corresponding or doctype not corresponding";
+        return UserProject{};
+    }
+
+    auto associatedPyFile{rootNode.attribute(XML::XMLProps::UserProject::attrs_pyFile,"")};
+
+    QList<PyDesc::FunctionDesc> outList{};
+    XML::readObjectListFromXMLNode(outList,rootNode);
+
+    return UserProject{std::move(outList),associatedPyFile};
+}
+
 }

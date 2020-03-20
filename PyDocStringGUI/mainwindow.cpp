@@ -30,13 +30,13 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(ui->tw_args,SIGNAL(switchRows(int,int)),this,SLOT(argsSwitchRows(int,int)));
     connect(ui->tw_return,SIGNAL(switchRows(int,int)),this,SLOT(returnArgsSwitchRows(int,int)));
 
-    XML::readObjectListFromXMLFile(m_funcList,m_saveFileDocType,m_defaultFile);
+    XML::readObjectListFromXMLFile(m_userProj.funcList,m_saveFileDocType,m_defaultFile);
 
     actArgsListView();
     actReturnArgsListView();
     actFunctionListBox();
 
-    if(m_funcList.size() == 0)
+    if(m_userProj.funcList.size() == 0)
     {
         ui->gb_funcDesc->setEnabled(false);
     }
@@ -92,6 +92,14 @@ void MainWindow::setSavePath(QString newPath)
     ui->statusbar->setToolTip(m_currentSavePath);
 }
 
+void MainWindow::refreshAllViews()
+{
+    actFunctionListBox();
+    actFuncDescAndName();
+    actArgsListView();
+    actReturnArgsListView();
+}
+
 //MISC
 
     //project loading/saving
@@ -103,21 +111,25 @@ void MainWindow::loadFromFile(QString path)
         return;
 
     setSavePath(path);
-    XML::readObjectListFromXMLFile(m_funcList,m_saveFileDocType,path);
+    m_userProj = UserProject::readProjectFromFile(m_saveFileDocType,path);
 
-    actFunctionListBox();
-    actFuncDescAndName();
-    actArgsListView();
-    actReturnArgsListView();
+    refreshAllViews();
 }
+
 void MainWindow::saveProjectToFile(QString path)
 {
-
+    UserProject::writeProjectToFile(m_userProj,m_saveFileDocType,path);
 }
 
 void MainWindow::loadProjectFromFile(QString path)
 {
+    if(path.isEmpty())
+        return;
 
+    setSavePath(path);
+    m_userProj = UserProject::readProjectFromFile(m_saveFileDocType,path);
+
+    refreshAllViews();
 }
 
     //settings
@@ -188,10 +200,10 @@ void MainWindow::actArgsListView()
 {
     ui->tw_args->setColumnCount(3);
 
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
         return;
 
-    auto argsList{&(m_funcList[m_currentFunc].list_args)};
+    auto argsList{&(m_userProj.funcList[m_currentFunc].list_args)};
 
     auto size{std::size(*argsList)};
     ui->tw_args->setRowCount(size);
@@ -211,10 +223,10 @@ void MainWindow::actReturnArgsListView()
 {
     ui->tw_args->setColumnCount(3);
 
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
         return;
 
-    auto returnList{&(m_funcList[m_currentFunc].list_returnArgs)};
+    auto returnList{&(m_userProj.funcList[m_currentFunc].list_returnArgs)};
 
     auto size{std::size(*returnList)};
     ui->tw_return->setRowCount(size);
@@ -233,10 +245,10 @@ void MainWindow::actReturnArgsListView()
 //switch args rows
 void MainWindow::argsSwitchRows(int startRow,int endRow)
 {
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
         return;
 
-    auto argsList{&(m_funcList[m_currentFunc].list_args)};
+    auto argsList{&(m_userProj.funcList[m_currentFunc].list_args)};
 
     argsList->swap(startRow,endRow);
 
@@ -248,10 +260,10 @@ void MainWindow::argsSwitchRows(int startRow,int endRow)
 //switch return args rows
 void MainWindow::returnArgsSwitchRows(int startRow,int endRow)
 {
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
         return;
 
-    auto returnList{&(m_funcList[m_currentFunc].list_returnArgs)};
+    auto returnList{&(m_userProj.funcList[m_currentFunc].list_returnArgs)};
 
     returnList->swap(startRow,endRow);
 
@@ -268,15 +280,15 @@ void MainWindow::returnArgsSwitchRows(int startRow,int endRow)
 
 void MainWindow::actFunctionListBox(int newIndex)
 {
-    if(ui->cb_funcSelec->count() < 0)
-        return;
-    ui->cb_funcSelec->clear();
-    for(const auto &elem : m_funcList)
+    if(ui->cb_funcSelec->count() > 0)
+        ui->cb_funcSelec->clear();
+
+    for(const auto &elem : m_userProj.funcList)
     {
         ui->cb_funcSelec->addItem(elem.name);
     }
 
-    if(newIndex < 0)
+    if(newIndex < 0 || std::size(m_userProj.funcList) == 0)
         return;
 
     ui->cb_funcSelec->setCurrentIndex(newIndex);
@@ -284,21 +296,20 @@ void MainWindow::actFunctionListBox(int newIndex)
 
 void MainWindow::actFuncDescAndName()
 {
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
         return;
 
-    ui->le_funcName->setText(m_funcList[m_currentFunc].name);
-    ui->te_desc->setPlainText(m_funcList[m_currentFunc].desc);
+    ui->le_funcName->setText(m_userProj.funcList[m_currentFunc].name);
+    ui->te_desc->setPlainText(m_userProj.funcList[m_currentFunc].desc);
 }
 
 void MainWindow::oneElementModified()
 {
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
         return;
 
-    ui->tb_output->setPlainText(PyDesc::getFormattedDesc(m_funcList[m_currentFunc]));
+    ui->tb_output->setPlainText(PyDesc::getFormattedDesc(m_userProj.funcList[m_currentFunc]));
 }
-
 //---------------------------------------------------------------------- Qt SLOTS
 
     //tableWidget cell changed
@@ -307,10 +318,10 @@ void MainWindow::on_tw_args_cellChanged(int row, int column)
 {
     auto newText{ui->tw_args->item(row,column)->text()};
 
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
         return;
 
-    auto argsList{&(m_funcList[m_currentFunc].list_args)};
+    auto argsList{&(m_userProj.funcList[m_currentFunc].list_args)};
 
     if(column == 0)
         (*argsList)[row].name = newText;
@@ -326,10 +337,10 @@ void MainWindow::on_tw_return_cellChanged(int row, int column)
 {
     auto newText{ui->tw_return->item(row,column)->text()};
 
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
         return;
 
-    auto argsList{&(m_funcList[m_currentFunc].list_returnArgs)};
+    auto argsList{&(m_userProj.funcList[m_currentFunc].list_returnArgs)};
 
     (*argsList)[row].name = "Index "+QString::number(row);
 
@@ -347,19 +358,19 @@ void MainWindow::on_tw_return_cellChanged(int row, int column)
         //function arguments
 void MainWindow::on_pb_argsAdd_clicked()
 {
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
     {
         QMessageBox::warning(this,"Erreur","Veuillez créer une nouvelle fonction avant de pouvoir ajouter des éléments");
         return;
     }
 
-    m_funcList[m_currentFunc].list_args.append(PyDesc::Argument{"","",""});
+    m_userProj.funcList[m_currentFunc].list_args.append(PyDesc::Argument{"","",""});
     actArgsListView();
 }
 
 void MainWindow::on_pb_argsMinus_clicked()
 {
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
     {
         return;
     }
@@ -369,10 +380,10 @@ void MainWindow::on_pb_argsMinus_clicked()
     if(selectedRow == -1)
         return;
 
-    m_funcList[m_currentFunc].list_args.removeAt(selectedRow);
+    m_userProj.funcList[m_currentFunc].list_args.removeAt(selectedRow);
     actArgsListView();
 
-    if(std::size(m_funcList[m_currentFunc].list_args) == 0)
+    if(std::size(m_userProj.funcList[m_currentFunc].list_args) == 0)
     {
         oneElementModified();
     }
@@ -381,13 +392,13 @@ void MainWindow::on_pb_argsMinus_clicked()
         //function return values
 void MainWindow::on_pb_returnArgsAdd_clicked()
 {
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
     {
         QMessageBox::warning(this,"Erreur","Veuillez créer une nouvelle fonction avant de pouvoir ajouter des éléments");
         return;
     }
 
-    auto returnList{&(m_funcList[m_currentFunc].list_returnArgs)};
+    auto returnList{&(m_userProj.funcList[m_currentFunc].list_returnArgs)};
 
     returnList->append(PyDesc::Argument{"Index "+QString::number(std::size(*returnList)),"",""});
     actReturnArgsListView();
@@ -395,7 +406,7 @@ void MainWindow::on_pb_returnArgsAdd_clicked()
 
 void MainWindow::on_pb_returnArgsMinus_clicked()
 {
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
     {
         return;
     }
@@ -404,16 +415,16 @@ void MainWindow::on_pb_returnArgsMinus_clicked()
     if(selectedRow == -1)
         return;
 
-    m_funcList[m_currentFunc].list_returnArgs.removeAt(selectedRow);
+    m_userProj.funcList[m_currentFunc].list_returnArgs.removeAt(selectedRow);
 
-    for(auto i{selectedRow};i < std::size(m_funcList[m_currentFunc].list_returnArgs);i++)
+    for(auto i{selectedRow};i < std::size(m_userProj.funcList[m_currentFunc].list_returnArgs);i++)
     {
-        m_funcList[m_currentFunc].list_returnArgs[i].name = "Index "+QString::number(i);
+        m_userProj.funcList[m_currentFunc].list_returnArgs[i].name = "Index "+QString::number(i);
     }
 
     actReturnArgsListView();
 
-    if(std::size(m_funcList[m_currentFunc].list_returnArgs) == 0)
+    if(std::size(m_userProj.funcList[m_currentFunc].list_returnArgs) == 0)
     {
         oneElementModified();
     }
@@ -423,24 +434,24 @@ void MainWindow::on_pb_returnArgsMinus_clicked()
 
 void MainWindow::on_te_desc_textChanged()
 {
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
     {
         return;
     }
 
-    m_funcList[m_currentFunc].desc = ui->te_desc->toPlainText();
+    m_userProj.funcList[m_currentFunc].desc = ui->te_desc->toPlainText();
 
     oneElementModified();
 }
 
 void MainWindow::on_le_funcName_textChanged(const QString &arg1)
 {
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
     {
         return;
     }
 
-    m_funcList[m_currentFunc].name = arg1;
+    m_userProj.funcList[m_currentFunc].name = arg1;
 
     ui->cb_funcSelec->setItemText(ui->cb_funcSelec->currentIndex(),arg1);
 
@@ -458,7 +469,7 @@ void MainWindow::on_dw_output_visibilityChanged(bool visible)
 
 void MainWindow::on_cb_funcSelec_currentIndexChanged(int index)
 {
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
     {
         ui->gb_funcDesc->setEnabled(false);
 
@@ -474,8 +485,8 @@ void MainWindow::on_cb_funcSelec_currentIndexChanged(int index)
 
     m_currentFunc = index;
 
-    actFuncDescAndName();
     actArgsListView();
+    actFuncDescAndName();
     actReturnArgsListView();
 }
 
@@ -486,9 +497,9 @@ void MainWindow::on_pb_funcAdd_clicked()
     if(funcName.isEmpty())
         return;
 
-    m_funcList.append(PyDesc::FunctionDesc{funcName,"",{},{}});
+    m_userProj.funcList.append(PyDesc::FunctionDesc{funcName,"",{},{}});
 
-    int newIndex{std::size(m_funcList)-1};
+    int newIndex{std::size(m_userProj.funcList)-1};
 
     actFunctionListBox(newIndex);
 
@@ -502,10 +513,10 @@ void MainWindow::on_pb_funcMinus_clicked()
     if(answer == QMessageBox::No)
         return;
 
-    m_funcList.removeAt(ui->cb_funcSelec->currentIndex());
+    m_userProj.funcList.removeAt(ui->cb_funcSelec->currentIndex());
     actFunctionListBox();
 
-    if(m_funcList.isEmpty())
+    if(m_userProj.funcList.isEmpty())
     {
         ui->tw_args->setRowCount(0);
 
@@ -535,6 +546,8 @@ void MainWindow::on_action_saveAs_triggered()
     if(saveFile.isEmpty())
         return;
 
+    m_firstSaveAfterStart = false;
+
     if(!saveFile.endsWith(QString{"."}+PYDESCGUI_FILE_EXT))
     {
         saveFile += QString{"."}+PYDESCGUI_FILE_EXT;
@@ -542,11 +555,7 @@ void MainWindow::on_action_saveAs_triggered()
 
     setSavePath(saveFile);
 
-    UserProject::UserProject proj{m_funcList,"Test.py"};
-
-    UserProject::writeProjectToFile(proj,m_saveFileDocType,saveFile);
-
-    //XML::writeObjectListToXMLFile(m_funcList,m_saveFileDocType,m_currentSavePath);
+    saveProjectToFile(saveFile);
 
     ui->statusbar->showMessage("Sauvegardé à "+QDateTime::currentDateTime().toString("hh:mm:ss"),300000);
 }
@@ -556,6 +565,10 @@ void MainWindow::on_action_open_triggered()
     cout << QFileInfo(m_currentSavePath).absoluteDir().path();
     QString openedFile{QFileDialog::getOpenFileName(this,"Ouvrir",QFileInfo(m_currentSavePath).absoluteDir().path(),QString("PyDocString file (*.")+QString(PYDESCGUI_FILE_EXT)+");; Tous (*)")};
 
+    if(openedFile.isEmpty())
+        return;
+
+    m_firstSaveAfterStart = false;
     loadFromFile(openedFile);
 }
 
@@ -567,7 +580,18 @@ void MainWindow::on_action_save_triggered()
     if(m_currentSavePath.isEmpty())
         return;
 
-    XML::writeObjectListToXMLFile(m_funcList,m_saveFileDocType,m_currentSavePath);
+    if(m_firstSaveAfterStart) //if the user is editing the file opened on program start
+    {
+        //ask for confirmation
+        auto answer{QMessageBox::question(this,"Confirmation","Êtes-vous sûr de vouloir écraser le fichier :\n<"+m_currentSavePath+">",QMessageBox::Yes | QMessageBox::No)};
+
+        if(answer == QMessageBox::No) //if the user doesn't want to overwrite the file
+            return;
+
+        m_firstSaveAfterStart = false;
+    }
+
+    saveProjectToFile(m_currentSavePath);
 
     ui->statusbar->showMessage("Sauvegardé à "+QDateTime::currentDateTime().toString("hh:mm:ss"),300000);
 }
@@ -583,10 +607,8 @@ void MainWindow::on_action_initFromPyFiles_triggered()
 
     m_lastPyFile = pyFile;
 
-    m_funcList = PyDesc::PyFileParser::findFunctionsIndexes(pyFile);
+    m_userProj.funcList = PyDesc::PyFileParser::findFunctionsIndexes(pyFile);
+    m_userProj.associatedPyFile = pyFile;
 
-    actFunctionListBox();
-    actFuncDescAndName();
-    actArgsListView();
-    actReturnArgsListView();
+    refreshAllViews();
 }

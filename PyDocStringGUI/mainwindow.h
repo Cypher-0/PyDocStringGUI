@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "FunctionDescription/functiondesc.h"
 #include "ProgSettings/Setting.hpp"
+#include "UserProject/UserProject.h"
 #include <QList>
 #include <QLabel>
 #include <QDir>
@@ -80,13 +81,16 @@ private:
     Ui::MainWindow *ui;
 
     int m_currentFunc{0};
-    QList<PyDesc::FunctionDesc> m_funcList{};
+    //QList<PyDesc::FunctionDesc> m_funcList{};
+    UserProject::UserProject m_userProj{};
 
     //save
 
     inline static const QString m_saveFileDocType{"FunctionDescriptionFile"};
     QString m_currentSavePath{""};
-    QLabel *m_lbl_currentPath;
+    bool m_firstSaveAfterStart{true};
+
+    QLabel *m_lbl_currentPath;//status bar label displaying current file
     inline static const QString m_defaultFile{QDir::currentPath()+"/Default.xml"};
 
     void saveProjectToFile(QString path);
@@ -107,5 +111,6 @@ private:
     //OTHERS
 
     void setSavePath(QString newPath);
+    void refreshAllViews();
 };
 #endif // MAINWINDOW_H
