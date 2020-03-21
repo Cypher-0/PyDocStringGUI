@@ -143,39 +143,40 @@ void readFromXmlNode(Argument &target,const QDomElement &objectRoot)
 //-------------------------------------------------------------------------------- OTHERS
 
 
-QString getFormattedDesc(const FunctionDesc &fDesc)
+QString getFormattedDesc(const FunctionDesc &fDesc, const QString &identation)
 {
     QString title_desc{"Descriptif"};
     QString title_args{"Arguments"};
     QString title_return{"Retourne"};
 
-    QString result{"\"\"\"\n"};
+    QString result{identation+"\"\"\"\n"};
 
     //description
 
     QString formatedTitle{"**"+title_desc+"**"};
-    result += formatedTitle + "\n";
+    result += identation + formatedTitle + "\n" + identation;
     Utils::addCharXTimes(result,formatedTitle.size());
     result += "\n";
 
-    result += fDesc.desc + "\n\n";
+    result += identation + fDesc.desc + "\n\n";
 
     //arguments
 
     formatedTitle = "**"+title_args+"**";
-    result += formatedTitle + "\n";
+    result += identation + formatedTitle + "\n" + identation;
     Utils::addCharXTimes(result,formatedTitle.size());
     result += "\n";
 
     if(fDesc.list_args.size() == 0)
     {
-        result += "( ***void*** )\n\n";
+        result += identation + "( ***void*** )\n\n";
     }
     else
     {
         for(const auto &elem : fDesc.list_args)
         {
-            result += "- **`"+elem.name+"`** ( *"+elem.type+"* ): "+elem.desc+"\n\n";
+            result += identation + "- **`"+elem.name+"`** ( *"+((elem.type.isEmpty())?"-":elem.type)
+                      +"* ): "+((elem.desc.isEmpty())?"-":elem.desc)+"\n\n";
         }
     }
 
@@ -184,31 +185,31 @@ QString getFormattedDesc(const FunctionDesc &fDesc)
     //return values
 
     formatedTitle = "**"+title_return+"**";
-    result += formatedTitle + "\n";
+    result += identation + formatedTitle + "\n" + identation;
     Utils::addCharXTimes(result,formatedTitle.size());
     result += "\n\n";
 
     if(fDesc.list_returnArgs.size() == 0)
     {
-        result += "( ***void*** )";
+        result += identation + "( ***void*** )";
     }
     else if(fDesc.list_returnArgs.size() == 1)
     {
         QString desc{(fDesc.list_returnArgs[0].desc.isEmpty())?"-":fDesc.list_returnArgs[0].desc};
-        result += "( ***"+fDesc.list_returnArgs[0].type+"*** ) : "+desc;
+        result += identation + "( ***"+fDesc.list_returnArgs[0].type+"*** ) : "+desc;
     }
     else if(fDesc.list_returnArgs.size() > 1)
     {
-        result += "( ***tuple*** ) : \n\n";
+        result += identation + "( ***tuple*** ) : \n\n";
 
         for(const auto &elem : fDesc.list_returnArgs)
         {
             QString desc{(elem.desc.isEmpty())?"-":elem.desc};
-            result += "- "+elem.name+" : ( ***"+elem.type+"*** ): "+desc+"\n";
+            result += identation + "- "+elem.name+" : ( ***"+elem.type+"*** ): "+desc+"\n";
         }
     }
 
-    result += "\n\n\"\"\"";
+    result += "\n\n"+ identation + "\"\"\"";
 
     return result;
 }

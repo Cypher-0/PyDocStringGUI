@@ -131,6 +131,25 @@ namespace Utils
 
         return {std::move(start),std::move(end)};
     }
+
+    void writeLinesListToFile(const QString &filePath, const QStringList &lines)
+    {
+        QString outText;
+
+        for(const auto &line : lines)
+        {
+            outText += line + "\n";
+        }
+
+        QFile file{filePath};
+        if(!file.open(QIODevice::WriteOnly))
+        {
+            cout << "Cannot open : <" << filePath << ">";
+            return;
+        }
+
+        file.write(outText.toUtf8());
+    }
 }
 
 }

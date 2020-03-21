@@ -42,7 +42,7 @@ void readFromXmlNode(Argument &target,const QDomElement &objectRoot);
 
 
 
-QString getFormattedDesc(const FunctionDesc &fDesc);
+QString getFormattedDesc(const FunctionDesc &fDesc,const QString &identation = "");
 
 namespace Utils
 {

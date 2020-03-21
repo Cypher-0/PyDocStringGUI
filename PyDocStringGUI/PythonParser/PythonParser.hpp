@@ -37,6 +37,8 @@ namespace Utils
     FunctionDesc getFunctionFromLine(QString line);
 
     std::tuple<int, int> getDocStringStartEndLines(int defLine,int nextDefLine,const QList<int> &linesOfLim);
+
+    void writeLinesListToFile(const QString &file,const QStringList &lines);
 }
 }
 

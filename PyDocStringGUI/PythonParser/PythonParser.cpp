@@ -60,7 +60,7 @@ namespace PyFileParser
             return;
         }
 
-        auto text{file.readAll()};
+        QString text{file.readAll()};
         file.close();
 
         QRegularExpression regex_pyFunc{"[\\n\\t\\s]{0,}def[\\s]{1,}[\\w_\\=\\(\\),\\s]{1,}[:]{1}"};
@@ -87,17 +87,24 @@ namespace PyFileParser
 
             auto funcProjIndex{PyDesc::Utils::findFunctionIndex(proj.funcList,searchedFunc)};
 
-            cout << funcName << "  " << start <<"  " << end << "  " << funcProjIndex;
+            //cout << funcName << "  " << start <<"  " << end << "  " << funcProjIndex;
+
+            QRegularExpression regex_identLevel{"^[\\s]{0,}[.]{0,}"};
+            auto match_identLevel{regex_identLevel.match(linesList[linesIndexList_pyDef[i]])};
+            QString functionIden{match_identLevel.capturedTexts()[0]+"\t"};
+
             if(funcProjIndex == -1)
             {
-                cout<<"<"<<funcName<<"> exist in file but not in desc file";
+                cout<<"<"<<funcName<<"> exist in Python file but not in desc file";
                 continue;
             }
             analysedFunctionsFromProj.append(funcProjIndex);
 
+            auto functionDesc{PyDesc::getFormattedDesc(proj.funcList[funcProjIndex],functionIden)};
+
             if(start == -1) //if there is no existing dosctring
             {
-
+                linesList[linesIndexList_pyDef[i]] += "\n" + functionDesc + "\n";
             }
             else if(start != -1 && end == -1) //if the docstring is on only one line
             {
@@ -121,12 +128,15 @@ namespace PyFileParser
 
         if(std::size(nonAnalysedFunctionsFromProj) != std::size(proj.funcList))
         {
-            cout << "Uknown python functions exists in description file :";
+            cout << "Following functions are not defined in Python file :";
             for(const auto &elem : nonAnalysedFunctionsFromProj)
             {
                 cout << proj.funcList[elem].name;
             }
         }
+
+
+        Utils::writeLinesListToFile("TEST.py",linesList);
     }
 }
 
