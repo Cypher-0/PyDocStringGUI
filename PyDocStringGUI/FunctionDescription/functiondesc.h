@@ -47,7 +47,13 @@ QString getFormattedDesc(const FunctionDesc &fDesc);
 namespace Utils
 {
 void addCharXTimes(QString &baseStr,int charNum,QChar wantedChar = '-');
+
+int findFunctionIndex(const QList<FunctionDesc> funcList,const FunctionDesc &func);
 }
+
+//name based equalitys
+bool operator==(const FunctionDesc &func0,const FunctionDesc &func1);
+bool operator==(const Argument &arg0,const Argument &arg1);
 
 }
 

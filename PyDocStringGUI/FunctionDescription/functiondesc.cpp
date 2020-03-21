@@ -222,6 +222,41 @@ void addCharXTimes(QString &baseStr,int charNum,QChar wantedChar)
         baseStr += wantedChar;
 }
 
+int findFunctionIndex(const QList<FunctionDesc> funcList,const FunctionDesc &func)
+{
+    auto size{std::size(funcList)};
+    for(int i = 0; i < size;i++)
+    {
+        if(funcList[i] == func)
+            return i;
+    }
+
+    return -1;
+}
+
+}
+
+bool operator==(const FunctionDesc &func0,const FunctionDesc &func1)
+{
+    //name + args list
+    if(func0.name == func1.name &&
+       func0.list_args == func1.list_args
+      )
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool operator==(const Argument &arg0,const Argument &arg1)
+{
+    if(arg0.name == arg1.name)
+    {
+        return true;
+    }
+
+    return false;
 }
 
 }

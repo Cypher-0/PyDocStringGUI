@@ -76,14 +76,56 @@ namespace PyFileParser
         linesIndexList_pyDef.append(std::size(linesList)-1);
 
         cout << linesIndexList_pyDef;
+        QList<int> analysedFunctionsFromProj{};
 
-        for(int i = 0; i < std::size(linesIndexList_pyDef)-1;i++)
+        for(int i = std::size(linesIndexList_pyDef)-2; i >= 0 ;i--)
         {
             auto [start,end]{Utils::getDocStringStartEndLines(linesIndexList_pyDef[i],linesIndexList_pyDef[i+1],linesIndexList_pyDocStr)};
 
-            auto funcName{Utils::getFunctionFromLine(linesList[linesIndexList_pyDef[i]]).name};
+            auto searchedFunc{Utils::getFunctionFromLine(linesList[linesIndexList_pyDef[i]])};
+            auto funcName{searchedFunc.name};
 
-            cout << funcName << "  " << start <<"  " << end;
+            auto funcProjIndex{PyDesc::Utils::findFunctionIndex(proj.funcList,searchedFunc)};
+
+            cout << funcName << "  " << start <<"  " << end << "  " << funcProjIndex;
+            if(funcProjIndex == -1)
+            {
+                cout<<"<"<<funcName<<"> exist in file but not in desc file";
+                continue;
+            }
+            analysedFunctionsFromProj.append(funcProjIndex);
+
+            if(start == -1) //if there is no existing dosctring
+            {
+
+            }
+            else if(start != -1 && end == -1) //if the docstring is on only one line
+            {
+
+            }
+            else if(start != -1 && end != -1)//if the docstring is on multiple lines
+            {
+
+            }
+        }
+
+        QList<int> nonAnalysedFunctionsFromProj{};
+        auto tempSize{std::size(proj.funcList)};
+        for(int i = 0; i < tempSize;i++)
+        {
+            if(!analysedFunctionsFromProj.contains(i))
+            {
+                nonAnalysedFunctionsFromProj.append(i);
+            }
+        }
+
+        if(std::size(nonAnalysedFunctionsFromProj) != std::size(proj.funcList))
+        {
+            cout << "Uknown python functions exists in description file :";
+            for(const auto &elem : nonAnalysedFunctionsFromProj)
+            {
+                cout << proj.funcList[elem].name;
+            }
         }
     }
 }
