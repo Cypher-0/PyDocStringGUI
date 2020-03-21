@@ -52,7 +52,7 @@ namespace PyFileParser
         return outList;
     }
 
-    void writeFuncDescToPyFile(const UserProject::UserProject proj)
+    void writeFuncDescToPyFile(const UserProject::UserProject &proj)
     {
 
     }
