@@ -629,3 +629,14 @@ void MainWindow::on_toolBut_pyFile_clicked()
     ui->le_pyFile->setText(pyFile);
 }
 
+
+void MainWindow::on_action_exportToPyFile_triggered()
+{
+    if(m_userProj.associatedPyFile.isEmpty())
+        on_toolBut_pyFile_clicked();
+
+    if(m_userProj.associatedPyFile.isEmpty())
+        return;
+
+    PyDesc::PyFileParser::writeFuncDescToPyFile(m_userProj);
+}

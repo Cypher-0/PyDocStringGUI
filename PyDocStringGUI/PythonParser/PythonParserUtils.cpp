@@ -36,7 +36,7 @@ namespace Utils
         return outList;
     }
 
-    QList<int> linesOf(const QString &text,const QRegularExpression &regex)
+    QList<int> linesOf(const QString &text, const QRegularExpression &regex, bool keepInComments)
     {
         auto linesList{text.split("\n")};
 
@@ -44,8 +44,24 @@ namespace Utils
 
         for(int i = 0; i < std::size(linesList);i++)
         {
-            if(linesList.at(i).contains(regex))
-                outList.append(i);
+            auto defIndex{linesList.at(i).indexOf(regex)};
+
+            auto matchs{regex.match(linesList.at(i))};
+
+            if(matchs.hasMatch())
+            {
+                if(keepInComments)
+                    outList.append(i);
+                else
+                {
+                    auto commentIndex{linesList.at(i).indexOf("#")};
+
+                    if(commentIndex > defIndex+std::size(matchs.capturedTexts()[0]) || commentIndex == -1)
+                    {
+                        outList.append(i);
+                    }
+                }
+            }
         }
 
         return outList;
@@ -83,6 +99,7 @@ namespace Utils
         return out;
     }
 
+    //linesOfLim contains all lines index containing at least one <"""> (limit of docstring)
     std::tuple<int, int> getDocStringStartEndLines(int defLine,int nextDefLine,const QList<int> &linesOfLim)
     {
         int start{-1},end{-1};
@@ -90,16 +107,23 @@ namespace Utils
         bool firstDocStringLim{true};
         for(const auto &limLine : linesOfLim)
         {
-            if(limLine > defLine && limLine < nextDefLine)
+            if(limLine > defLine)
             {
-                if(firstDocStringLim)
+                if(limLine < nextDefLine)
                 {
-                    start = limLine;
-                    firstDocStringLim = false;
+                    if(firstDocStringLim)
+                    {
+                        start = limLine;
+                        firstDocStringLim = false;
+                    }
+                    else
+                    {
+                        end = limLine;
+                        break;
+                    }
                 }
                 else
                 {
-                    end = limLine;
                     break;
                 }
             }

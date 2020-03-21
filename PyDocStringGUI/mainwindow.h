@@ -79,6 +79,8 @@ private slots:
 
     void on_toolBut_pyFile_clicked();
 
+    void on_action_exportToPyFile_triggered();
+
 private:
     Ui::MainWindow *ui;
 

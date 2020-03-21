@@ -32,7 +32,7 @@ namespace Utils
 {
     QList<int> indexesOf(const QString &str,const QRegularExpression &regex);
 
-    QList<int> linesOf(const QString &text,const QRegularExpression &regex);
+    QList<int> linesOf(const QString &text,const QRegularExpression &regex,bool keepInComments = false);
 
     FunctionDesc getFunctionFromLine(QString line);
 
