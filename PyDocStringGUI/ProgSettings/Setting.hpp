@@ -14,6 +14,21 @@
 namespace Config
 {
 
+namespace Utils
+{
+    template<typename T>
+    inline T toStr(const QString &str)
+    {
+        return T(str.toDouble());
+    }
+
+    template<>
+    inline QString toStr(const QString &str)
+    {
+        return str;
+    }
+}
+
 template<typename T>
 struct Setting
 {
@@ -45,7 +60,8 @@ void readFromXmlNode(Setting<T> &target,const QDomElement &objectRoot)
             QString nodeName{currentNode.attribute(XMLProps::Settings::attrs_name,"")};
             if(nodeName == target.name)
             {
-                target.value = currentNode.attribute(XMLProps::Settings::attrs_value,T{});
+                auto temp{currentNode.attribute(XMLProps::Settings::attrs_value,"")};
+                target.value = Utils::toStr<T>(temp);
             }
         }
         currentNode = currentNode.nextSiblingElement();

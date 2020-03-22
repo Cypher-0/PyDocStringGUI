@@ -27,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 {
     ui->setupUi(this);
 
+    cout << "~~~~~~~~~~~ INIT : " << __func__ << " ~~~~~~~~~~~";
+
     connect(ui->tw_args,SIGNAL(switchRows(int,int)),this,SLOT(argsSwitchRows(int,int)));
     connect(ui->tw_return,SIGNAL(switchRows(int,int)),this,SLOT(returnArgsSwitchRows(int,int)));
 
@@ -69,6 +71,9 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     //QString pyFile{"/home/mathieu/Documents/TRAVAIL/S4P/Supervision/s4p_supervision/Sources/PLC/Variables.py"};
     //PyDesc::PyFileParser::findFunctionsIndexes(pyFile);
+
+
+    cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n";
 }
 
 MainWindow::~MainWindow()
@@ -163,6 +168,9 @@ void MainWindow::readSettings()
     }
 
     Config::readFromXmlNode(m_set_lastFile,rootNode);
+
+    Config::readFromXmlNode(m_set_savePyFileBeforeExport,rootNode);
+    ui->cb_savePyFileBeforeExport->setChecked(m_set_savePyFileBeforeExport.value);
 }
 
 void MainWindow::saveSettings()
@@ -180,6 +188,7 @@ void MainWindow::saveSettings()
     //doc created with root node and header
 
     Config::writeToXmlNode(m_set_lastFile,doc,rootNode);
+    Config::writeToXmlNode(m_set_savePyFileBeforeExport,doc,rootNode);
 
 
     //target file to save XML Dom Doc
@@ -532,13 +541,33 @@ void MainWindow::on_pb_funcMinus_clicked()
     }
 }
 
+    //Python
+
+void MainWindow::on_cb_savePyFileBeforeExport_stateChanged(int arg1)
+{
+    m_set_savePyFileBeforeExport.value = bool(arg1);
+}
+
+void MainWindow::on_toolBut_pyFile_clicked()
+{
+    auto basePath{(m_userProj.associatedPyFile.isEmpty())?QFileInfo(m_currentSavePath).absoluteDir().path():QFileInfo(m_userProj.associatedPyFile).absoluteDir().path()};
+    QString pyFile{QFileDialog::getOpenFileName(this,"Ouvrir",basePath,QString("python file (*.py);; Tous (*)"))};
+
+    if(pyFile.isEmpty())
+        return;
+
+    m_userProj.associatedPyFile = pyFile;
+
+    ui->le_pyFile->setText(pyFile);
+}
+
 
 // ---------------  Actions
 
 void MainWindow::on_act_enableOutput_toggled(bool arg1)
 {
     ui->dw_output->setVisible(arg1);
-    actArgsListView();
+    //actArgsListView();
 }
 
 void MainWindow::on_action_saveAs_triggered()
@@ -616,20 +645,6 @@ void MainWindow::on_action_initFromPyFiles_triggered()
     refreshAllViews();
 }
 
-void MainWindow::on_toolBut_pyFile_clicked()
-{
-    auto basePath{(m_userProj.associatedPyFile.isEmpty())?QFileInfo(m_currentSavePath).absoluteDir().path():QFileInfo(m_userProj.associatedPyFile).absoluteDir().path()};
-    QString pyFile{QFileDialog::getOpenFileName(this,"Ouvrir",basePath,QString("python file (*.py);; Tous (*)"))};
-
-    if(pyFile.isEmpty())
-        return;
-
-    m_userProj.associatedPyFile = pyFile;
-
-    ui->le_pyFile->setText(pyFile);
-}
-
-
 void MainWindow::on_action_exportToPyFile_triggered()
 {
     if(m_userProj.associatedPyFile.isEmpty())
@@ -638,5 +653,16 @@ void MainWindow::on_action_exportToPyFile_triggered()
     if(m_userProj.associatedPyFile.isEmpty())
         return;
 
-    PyDesc::PyFileParser::writeFuncDescToPyFile(m_userProj);
+    auto success{PyDesc::PyFileParser::writeFuncDescToPyFile(m_userProj)};
+
+    auto pyFileName{QFileInfo{m_userProj.associatedPyFile}.fileName()};
+
+    if(success)
+    {
+        ui->statusbar->showMessage("Successfuly exported descriptions to Py file <"+pyFileName+">",300000);
+    }
+    else
+    {
+        ui->statusbar->showMessage("Failed exported descriptions to Py file <"+pyFileName+">",300000);
+    }
 }

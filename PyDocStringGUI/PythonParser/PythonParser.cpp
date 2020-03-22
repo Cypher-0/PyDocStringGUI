@@ -1,6 +1,7 @@
 #include "PythonParser.hpp"
 
 #include <QFile>
+#include <QFileInfo>
 #include <QList>
 #include <QRegularExpression>
 
@@ -50,14 +51,29 @@ namespace PyFileParser
         return outList;
     }
 
-    void writeFuncDescToPyFile(const UserProject::UserProject &proj)
+    bool writeFuncDescToPyFile(const UserProject::UserProject &proj,bool saveFileBefore)
     {
         QFile file{proj.associatedPyFile};
+        if(saveFileBefore)
+        {
+            auto copyFile{QFileInfo{file}.absolutePath()+"/GUIsave_"+QFileInfo{file}.fileName()};
+
+            if(QFile::exists(copyFile))
+            {
+                QFile::remove(copyFile);
+            }
+
+            if(!file.copy(copyFile))
+                return false;
+
+            cout <<"Python file saved as : <" <<copyFile<< ">\n";
+        }
+
 
         if(!file.open(QIODevice::ReadOnly))
         {
             cout << "Cannot open <" << proj.associatedPyFile << ">";
-            return;
+            return false;
         }
 
         QString text{file.readAll()};
@@ -75,7 +91,6 @@ namespace PyFileParser
         auto linesList{text.split('\n')};
         linesIndexList_pyDef.append(std::size(linesList)-1);
 
-        cout << linesIndexList_pyDef;
         QList<int> analysedFunctionsFromProj{};
 
         for(int i = std::size(linesIndexList_pyDef)-2; i >= 0 ;i--)
@@ -102,17 +117,23 @@ namespace PyFileParser
 
             auto functionDesc{PyDesc::getFormattedDesc(proj.funcList[funcProjIndex],functionIden)};
 
+            //add new function desc to def line
+            linesList[linesIndexList_pyDef[i]] += "\n" + functionDesc;
+
             if(start == -1) //if there is no existing dosctring
             {
-                linesList[linesIndexList_pyDef[i]] += "\n" + functionDesc + "\n";
+                //nothing
             }
             else if(start != -1 && end == -1) //if the docstring is on only one line
             {
-
+                linesList.removeAt(start);
             }
             else if(start != -1 && end != -1)//if the docstring is on multiple lines
             {
-
+                for(int j = end; j >= start;j--)
+                {
+                    linesList.removeAt(j);
+                }
             }
         }
 
@@ -136,7 +157,14 @@ namespace PyFileParser
         }
 
 
-        Utils::writeLinesListToFile("TEST.py",linesList);
+        auto successWrite{Utils::writeLinesListToFile(proj.associatedPyFile,linesList)};
+
+        if(!successWrite)
+        {
+            return false;
+        }
+
+        return true;
     }
 }
 

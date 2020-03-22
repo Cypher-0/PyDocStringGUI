@@ -40,15 +40,12 @@ private slots:
 
 
     void on_tw_args_cellChanged(int row, int column);
-
     void on_tw_return_cellChanged(int row, int column);
 
     void on_pb_argsAdd_clicked();
-
     void on_pb_argsMinus_clicked();
 
     void on_pb_returnArgsAdd_clicked();
-
     void on_pb_returnArgsMinus_clicked();
 
     void on_te_desc_textChanged();
@@ -60,10 +57,11 @@ private slots:
 
 
     void on_cb_funcSelec_currentIndexChanged(int index);
-
     void on_pb_funcAdd_clicked();
-
     void on_pb_funcMinus_clicked();
+
+    void on_cb_savePyFileBeforeExport_stateChanged(int arg1);
+    void on_toolBut_pyFile_clicked();
 
     //actions
 
@@ -76,8 +74,6 @@ private slots:
     void on_action_save_triggered();
 
     void on_action_initFromPyFiles_triggered();
-
-    void on_toolBut_pyFile_clicked();
 
     void on_action_exportToPyFile_triggered();
 
@@ -103,7 +99,9 @@ private:
     //settings
     QString m_settingPath{QDir::currentPath()+"/settings.xml"};
     QString m_settingDocType{"ProgSettings"};
+
     Config::Setting<QString> m_set_lastFile{{"lastFile"},{""}};
+    Config::Setting<bool> m_set_savePyFileBeforeExport{{"savePyBeforeExport"},true};
 
 
     void readSettings();

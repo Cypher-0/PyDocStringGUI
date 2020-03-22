@@ -23,7 +23,7 @@ namespace PyFileParser
 
     QList<FunctionDesc> getFunctionDescListFromStr(const QStringList &textLines, const QList<int> &defLinesIndex);
 
-    void writeFuncDescToPyFile(const UserProject::UserProject &proj);
+    bool writeFuncDescToPyFile(const UserProject::UserProject &proj, bool saveFileBefore = true);
 
 
 //---------------------------------------
@@ -38,7 +38,7 @@ namespace Utils
 
     std::tuple<int, int> getDocStringStartEndLines(int defLine,int nextDefLine,const QList<int> &linesOfLim);
 
-    void writeLinesListToFile(const QString &file,const QStringList &lines);
+    bool writeLinesListToFile(const QString &file,const QStringList &lines);
 }
 }
 

@@ -132,7 +132,7 @@ namespace Utils
         return {std::move(start),std::move(end)};
     }
 
-    void writeLinesListToFile(const QString &filePath, const QStringList &lines)
+    bool writeLinesListToFile(const QString &filePath, const QStringList &lines)
     {
         QString outText;
 
@@ -145,10 +145,12 @@ namespace Utils
         if(!file.open(QIODevice::WriteOnly))
         {
             cout << "Cannot open : <" << filePath << ">";
-            return;
+            return false;
         }
 
         file.write(outText.toUtf8());
+
+        return true;
     }
 }
 
