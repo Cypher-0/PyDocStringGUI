@@ -653,7 +653,7 @@ void MainWindow::on_action_exportToPyFile_triggered()
     if(m_userProj.associatedPyFile.isEmpty())
         return;
 
-    auto success{PyDesc::PyFileParser::writeFuncDescToPyFile(m_userProj)};
+    auto success{PyDesc::PyFileParser::writeFuncDescToPyFile(m_userProj,m_set_savePyFileBeforeExport.value)};
 
     auto pyFileName{QFileInfo{m_userProj.associatedPyFile}.fileName()};
 

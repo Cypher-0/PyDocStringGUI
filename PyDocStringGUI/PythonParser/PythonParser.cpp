@@ -156,6 +156,7 @@ namespace PyFileParser
             }
         }
 
+        cout << "~~~~~~ END EXPORT ~~~~~~~\n";
 
         auto successWrite{Utils::writeLinesListToFile(proj.associatedPyFile,linesList)};
 
