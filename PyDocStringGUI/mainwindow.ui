@@ -367,7 +367,7 @@
      <x>0</x>
      <y>0</y>
      <width>839</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFen_tres">
@@ -389,7 +389,10 @@
      <string>Python</string>
     </property>
     <addaction name="action_initFromPyFiles"/>
+    <addaction name="separator"/>
     <addaction name="action_exportToPyFile"/>
+    <addaction name="action_loadUknownFuncFromPyFile"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="menuFichiers"/>
    <addaction name="menuFen_tres"/>
@@ -472,6 +475,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="action_loadUknownFuncFromPyFile">
+   <property name="text">
+    <string>Charger les fonction inconnues depuis le fichier python associé</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+R</string>
    </property>
   </action>
  </widget>

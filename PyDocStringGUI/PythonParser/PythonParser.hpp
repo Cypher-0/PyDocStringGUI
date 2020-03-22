@@ -19,7 +19,7 @@ namespace PyDesc
 
 namespace PyFileParser
 {
-    QList<FunctionDesc> findFunctionsIndexes(QString pyFile);
+    QList<FunctionDesc> findFunctions(QString pyFile);
 
     QList<FunctionDesc> getFunctionDescListFromStr(const QStringList &textLines, const QList<int> &defLinesIndex);
 

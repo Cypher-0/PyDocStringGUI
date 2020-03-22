@@ -77,6 +77,8 @@ private slots:
 
     void on_action_exportToPyFile_triggered();
 
+    void on_action_loadUknownFuncFromPyFile_triggered();
+
 private:
     Ui::MainWindow *ui;
 

@@ -142,6 +142,18 @@ void readFromXmlNode(Argument &target,const QDomElement &objectRoot)
 
 //-------------------------------------------------------------------------------- OTHERS
 
+QString getPrototype(const FunctionDesc &fDesc)
+{
+    QString vars{"("};
+    for(const auto &elem : fDesc.list_args)
+    {
+        vars += elem.name + ((elem.type.isEmpty())?"":" : "+elem.type)+",";
+    }
+    if(std::size(fDesc.list_args) > 0)
+        vars.remove(std::size(vars)-1,1);
+    vars += ")";
+    return fDesc.name+vars;
+}
 
 QString getFormattedDesc(const FunctionDesc &fDesc, const QString &identation)
 {
@@ -158,7 +170,9 @@ QString getFormattedDesc(const FunctionDesc &fDesc, const QString &identation)
     Utils::addCharXTimes(result,formatedTitle.size());
     result += "\n";
 
-    result += identation + fDesc.desc + "\n\n";
+    auto tempDesc{fDesc.desc};
+    tempDesc.replace("\n","\n"+identation);
+    result += identation + tempDesc + "\n\n";
 
     //arguments
 

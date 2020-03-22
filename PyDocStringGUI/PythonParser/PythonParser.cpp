@@ -13,7 +13,7 @@ namespace PyDesc
 
 namespace PyFileParser
 {
-    QList<FunctionDesc> findFunctionsIndexes(QString pyFile)
+    QList<FunctionDesc> findFunctions(QString pyFile)
     {
         QFile file{pyFile};
 
@@ -53,6 +53,8 @@ namespace PyFileParser
 
     bool writeFuncDescToPyFile(const UserProject::UserProject &proj,bool saveFileBefore)
     {
+        cout << "\n~~~~~~~~ BEGIN EXPORT ~~~~~~~~\n";
+
         QFile file{proj.associatedPyFile};
         if(saveFileBefore)
         {
@@ -110,7 +112,7 @@ namespace PyFileParser
 
             if(funcProjIndex == -1)
             {
-                cout<<"<"<<funcName<<"> exist in Python file but not in desc file";
+                cout<<"<"+PyDesc::getPrototype(searchedFunc)+"> exist in Python file but not in desc file";
                 continue;
             }
             analysedFunctionsFromProj.append(funcProjIndex);
@@ -147,12 +149,12 @@ namespace PyFileParser
             }
         }
 
-        if(std::size(nonAnalysedFunctionsFromProj) != std::size(proj.funcList))
+        if(std::size(nonAnalysedFunctionsFromProj) != 0)
         {
-            cout << "Following functions are not defined in Python file :";
+            cout << "\nFollowing functions are not defined in Python file :";
             for(const auto &elem : nonAnalysedFunctionsFromProj)
             {
-                cout << proj.funcList[elem].name;
+                cout << PyDesc::getPrototype(proj.funcList[elem]);
             }
         }
 

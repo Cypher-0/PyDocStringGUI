@@ -2,6 +2,7 @@
 #include <QString>
 #include <QRegularExpression>
 #include <QList>
+#include <QFile>
 #include "FunctionDescription/functiondesc.h"
 
 #include <QDebug>

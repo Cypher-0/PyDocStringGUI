@@ -632,6 +632,12 @@ void MainWindow::on_action_save_triggered()
 
 void MainWindow::on_action_initFromPyFiles_triggered()
 {
+    //ask for confirmation
+    auto answer{QMessageBox::question(this,"Confirmation","Ceci va réinitialiser le projet actuellement ouvert.\nÊtes-vous sûr de vouloir continuer ?",QMessageBox::Yes | QMessageBox::No)};
+
+    if(answer == QMessageBox::No) //if the user doesn't want to overwrite the file
+        return;
+
     auto basePath{(m_lastPyFile.isEmpty())?QFileInfo(m_currentSavePath).absoluteDir().path():m_lastPyFile};
     QString pyFile{QFileDialog::getOpenFileName(this,"Ouvrir",basePath,QString("python file (*.py);; Tous (*)"))};
     if(pyFile.isEmpty())
@@ -639,7 +645,7 @@ void MainWindow::on_action_initFromPyFiles_triggered()
 
     m_lastPyFile = pyFile;
 
-    m_userProj.funcList = PyDesc::PyFileParser::findFunctionsIndexes(pyFile);
+    m_userProj.funcList = PyDesc::PyFileParser::findFunctions(pyFile);
     m_userProj.associatedPyFile = pyFile;
 
     refreshAllViews();
@@ -665,4 +671,38 @@ void MainWindow::on_action_exportToPyFile_triggered()
     {
         ui->statusbar->showMessage("Failed exported descriptions to Py file <"+pyFileName+">",300000);
     }
+}
+
+void MainWindow::on_action_loadUknownFuncFromPyFile_triggered()
+{
+    if(m_userProj.associatedPyFile.isEmpty())
+        on_toolBut_pyFile_clicked();
+
+    if(m_userProj.associatedPyFile.isEmpty())
+        return;
+
+    cout << "~~~~~~~~~~ Loading unknown functions from associated Py File ~~~~~~~~~~\n";
+
+    auto tempList{PyDesc::PyFileParser::findFunctions(m_userProj.associatedPyFile)};
+
+    auto funcAdded{false};
+
+    cout << "Adding following functions : ";
+
+    for(const auto &elem : tempList)
+    {
+        if(!m_userProj.funcList.contains(elem))
+        {
+            m_userProj.funcList.append(elem);
+            cout << PyDesc::getPrototype(elem);
+            funcAdded = true;
+        }
+    }
+
+    if(!funcAdded)
+        cout << "(None)";
+
+    cout << "\n~~~~~~~~~~ END LOADING ~~~~~~~~~~\n";
+
+    refreshAllViews();
 }
