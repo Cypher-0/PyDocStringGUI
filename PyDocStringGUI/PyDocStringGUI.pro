@@ -23,6 +23,7 @@ SOURCES += \
     PythonParser/PythonParser.cpp \
     PythonParser/PythonParserUtils.cpp \
     UserProject/UserProject.cpp \
+    Utils/DockConsole.cpp \
     advancedtablewidget.cpp \
     main.cpp \
     mainwindow.cpp
@@ -36,6 +37,7 @@ HEADERS += \
     UserProject/UserProject.h \
     UserProject/xmlListManagement.h \
     UserProject/xmlPropsProj.h \
+    Utils/DockConsole.h \
     advancedtablewidget.h \
     mainwindow.h \
 

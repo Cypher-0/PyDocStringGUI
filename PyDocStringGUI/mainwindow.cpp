@@ -19,6 +19,7 @@
 #include "ProgSettings/Setting.hpp"
 
 #include "UserProject/UserProject.h"
+#include "Utils/DockConsole.h"
 
 #define cout qDebug()
 
@@ -26,6 +27,8 @@
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    m_console = new DockConsole(this,2);
 
     cout << "~~~~~~~~~~~ INIT : " << __func__ << " ~~~~~~~~~~~";
 
@@ -705,4 +708,12 @@ void MainWindow::on_action_loadUknownFuncFromPyFile_triggered()
     cout << "\n~~~~~~~~~~ END LOADING ~~~~~~~~~~\n";
 
     refreshAllViews();
+}
+
+void MainWindow::on_action_showConsole_triggered()
+{
+    if(m_console->isHidden())
+        m_console->show();
+    else
+        m_console->hide();
 }

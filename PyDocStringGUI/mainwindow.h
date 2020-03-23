@@ -5,6 +5,7 @@
 #include "FunctionDescription/functiondesc.h"
 #include "ProgSettings/Setting.hpp"
 #include "UserProject/UserProject.h"
+#include "Utils/DockConsole.h"
 #include <QList>
 #include <QLabel>
 #include <QDir>
@@ -79,6 +80,8 @@ private slots:
 
     void on_action_loadUknownFuncFromPyFile_triggered();
 
+    void on_action_showConsole_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -113,6 +116,8 @@ private:
     QString m_lastPyFile{};
 
     //OTHERS
+
+    DockConsole *m_console;
 
     void setSavePath(QString newPath);
     void refreshAllViews();
