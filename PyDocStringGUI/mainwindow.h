@@ -21,15 +21,13 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(const QStringList paramList,QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
 
     void actArgsListView();
     void actReturnArgsListView();
-
-    void loadFromFile(QString path);
 
     void argsSwitchRows(int startRow,int endRow);//switch args rows
     void returnArgsSwitchRows(int startRow,int endRow); //switch return args rows

@@ -57,7 +57,7 @@ static void writeObjectListToXMLFile(const QList<T> &objectList,QString iDocType
     auto file = QFile(iPath);
     if (!file.open(QIODevice::WriteOnly))
     {
-        qDebug() << "Cannot open : <" << iPath << ">";
+        qDebug() << "Cannot open : <" << iPath << ">   (" <<__func__<<")";
         return;
     }
 
@@ -98,7 +98,7 @@ static void readObjectListFromXMLFile(QList<T> &outList,QString iDocType,QString
     QFile file(iPath);
     if (!file.open(QIODevice::ReadOnly))
     {
-        qDebug() << "Cannot open : <" << iPath << ">";
+        qDebug() << "Cannot open : <" << iPath << ">   (" <<__func__<<")";
         return;
     }
 

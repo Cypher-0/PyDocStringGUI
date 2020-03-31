@@ -50,6 +50,9 @@
           <bool>false</bool>
          </property>
          <widget class="QGroupBox" name="gb_desc">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Permet de modifier la description de la fonction.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Un &lt;span style=&quot; font-weight:600; color:#ef2929;&quot;&gt;double retour à la ligne&lt;/span&gt; est nécessaire pour effectuer un simple retour à la ligne dans la documentation générée.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="title">
            <string>Description</string>
           </property>

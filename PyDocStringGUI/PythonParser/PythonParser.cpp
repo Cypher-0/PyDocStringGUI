@@ -74,7 +74,7 @@ namespace PyFileParser
 
         if(!file.open(QIODevice::ReadOnly))
         {
-            cout << "Cannot open <" << proj.associatedPyFile << ">";
+            cout << "Cannot open <" << proj.associatedPyFile << ">   (" <<__func__<<")";
             return false;
         }
 

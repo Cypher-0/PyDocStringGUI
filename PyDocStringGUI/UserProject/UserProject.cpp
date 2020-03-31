@@ -33,7 +33,7 @@ void writeProjectToFile(const UserProject &proj,QString iDocType,QString iPath)
     auto file = QFile(iPath);
     if (!file.open(QIODevice::WriteOnly))
     {
-        qDebug() << "Cannot open : <" << iPath << ">";
+        qDebug() << "Cannot open : <" << iPath << ">   (" <<__func__<<")";
         return;
     }
 
@@ -50,7 +50,7 @@ UserProject readProjectFromFile(QString iDocType,QString iPath)
     QFile file(iPath);
     if (!file.open(QIODevice::ReadOnly))
     {
-        qDebug() << "Cannot open : <" << iPath << ">";
+        qDebug() << "Cannot open : <" << iPath << ">   (" <<__func__<<")";
         return UserProject{};
     }
 

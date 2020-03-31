@@ -24,7 +24,7 @@
 #define cout qDebug()
 
 
-MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(const QStringList paramList, QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -50,13 +50,50 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->statusbar->addPermanentWidget(m_lbl_currentPath);
 
     readSettings();
-    cout << "Last file : <" <<m_set_lastFile.value << ">";
-    m_currentSavePath = m_set_lastFile.value;
 
-    if(m_currentSavePath.isEmpty())
-        loadFromFile(m_defaultFile);
-    else
-        loadFromFile(m_currentSavePath);
+    auto paramListSize{std::size(paramList)};//get number of args passed to the prog
+
+    QString paramPath{}; //we consider that all args given are only one path splitted with spaces
+    if(paramListSize > 1)
+    {
+        paramPath += paramList[1];
+        for(int i = 2; i < paramListSize; i++)
+        {
+            paramPath += " "+paramList[i];
+        }
+    }
+
+    if(!paramPath.isEmpty())//if there is a file arg given to the program
+    {
+        QFileInfo tempFile{paramPath};
+        if(tempFile.exists())//if the designed file exist
+        {
+            if(paramPath.indexOf(QRegularExpression{".py$"}) != -1) //if it's a python file
+            {
+                cout << "Opening Python file : <"<<paramPath<<">";
+                m_userProj.funcList = PyDesc::PyFileParser::findFunctions(paramPath);
+                m_userProj.associatedPyFile = paramPath;
+                refreshAllViews();
+            }
+            else
+            {
+                cout << "Opening file : <"<<paramPath<<">";
+                loadProjectFromFile(paramPath);
+            }
+
+            m_currentSavePath = "";//say that the project is unsaved
+        }
+    }
+    else//if there is only the executable arg passed to the program
+    {
+        cout << "Last file : <" <<m_set_lastFile.value << ">";
+        m_currentSavePath = m_set_lastFile.value;
+
+        if(m_currentSavePath.isEmpty())
+            loadProjectFromFile(m_defaultFile);
+        else
+            loadProjectFromFile(m_currentSavePath);
+    }
 
     //-------------- TESTS
 
@@ -84,6 +121,8 @@ MainWindow::~MainWindow()
     saveSettings();
 
     delete ui;
+    delete m_lbl_currentPath;
+    delete m_console;
 }
 
 //ACCESSORS
@@ -116,17 +155,6 @@ void MainWindow::refreshAllViews()
     //project loading/saving
 //load from file
 
-void MainWindow::loadFromFile(QString path)
-{
-    if(path.isEmpty())
-        return;
-
-    setSavePath(path);
-    m_userProj = UserProject::readProjectFromFile(m_saveFileDocType,path);
-
-    refreshAllViews();
-}
-
 void MainWindow::saveProjectToFile(QString path)
 {
     UserProject::writeProjectToFile(m_userProj,m_saveFileDocType,path);
@@ -152,7 +180,7 @@ void MainWindow::readSettings()
     QFile file(m_settingPath);
     if (!file.open(QIODevice::ReadOnly))
     {
-        qDebug() << "Cannot open : <" << m_settingPath << ">";
+        qDebug() << "Cannot open : <" << m_settingPath << ">   (" << __func__<<")";
         return;
     }
 
@@ -198,7 +226,7 @@ void MainWindow::saveSettings()
     auto file = QFile(m_settingPath);
     if (!file.open(QIODevice::WriteOnly))
     {
-        qDebug() << "Cannot open : <" << m_settingPath << ">";
+        qDebug() << "Cannot open : <" << m_settingPath << ">   ("<<__func__<<")";
         return;
     }
 
@@ -575,7 +603,6 @@ void MainWindow::on_act_enableOutput_toggled(bool arg1)
 
 void MainWindow::on_action_saveAs_triggered()
 {
-    cout << QFileInfo(m_currentSavePath).absoluteDir().path();
     QString saveFile{QFileDialog::getSaveFileName(this,"Enregistrer sous",QFileInfo(m_currentSavePath).absoluteDir().path()+"/Untitled."+QString(PYDESCGUI_FILE_EXT),QString("PyDocString file (*.")+QString(PYDESCGUI_FILE_EXT)+");; Tous (*)")};
 
     if(saveFile.isEmpty())
@@ -597,14 +624,13 @@ void MainWindow::on_action_saveAs_triggered()
 
 void MainWindow::on_action_open_triggered()
 {
-    cout << QFileInfo(m_currentSavePath).absoluteDir().path();
     QString openedFile{QFileDialog::getOpenFileName(this,"Ouvrir",QFileInfo(m_currentSavePath).absoluteDir().path(),QString("PyDocString file (*.")+QString(PYDESCGUI_FILE_EXT)+");; Tous (*)")};
 
     if(openedFile.isEmpty())
         return;
 
     m_firstSaveAfterStart = false;
-    loadFromFile(openedFile);
+    loadProjectFromFile(openedFile);
 }
 
 void MainWindow::on_action_save_triggered()
@@ -638,7 +664,7 @@ void MainWindow::on_action_initFromPyFiles_triggered()
     //ask for confirmation
     auto answer{QMessageBox::question(this,"Confirmation","Ceci va réinitialiser le projet actuellement ouvert.\nÊtes-vous sûr de vouloir continuer ?",QMessageBox::Yes | QMessageBox::No)};
 
-    if(answer == QMessageBox::No) //if the user doesn't want to overwrite the file
+    if(answer == QMessageBox::No) //if the user doesn't want to loose unsaved current project
         return;
 
     auto basePath{(m_lastPyFile.isEmpty())?QFileInfo(m_currentSavePath).absoluteDir().path():m_lastPyFile};
@@ -650,6 +676,7 @@ void MainWindow::on_action_initFromPyFiles_triggered()
 
     m_userProj.funcList = PyDesc::PyFileParser::findFunctions(pyFile);
     m_userProj.associatedPyFile = pyFile;
+    m_firstSaveAfterStart = true;//ask confirmation on next save
 
     refreshAllViews();
 }

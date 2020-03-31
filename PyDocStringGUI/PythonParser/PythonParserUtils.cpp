@@ -145,7 +145,7 @@ namespace Utils
         QFile file{filePath};
         if(!file.open(QIODevice::WriteOnly))
         {
-            cout << "Cannot open : <" << filePath << ">";
+            cout << "Cannot open : <" << filePath << ">   ("<<__func__<<")";
             return false;
         }
 
