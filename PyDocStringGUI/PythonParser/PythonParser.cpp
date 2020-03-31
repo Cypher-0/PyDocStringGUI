@@ -24,7 +24,7 @@ namespace PyFileParser
 
         file.close();
 
-        QRegularExpression regex_pyFunc{"[\\n\\t\\s]{0,}def[\\s]{1,}[\\w_\\=\\(\\)\\[\\],\\s]{1,}[:]{1}"};
+        QRegularExpression regex_pyFunc{regexStr_pyFunction};
         regex_pyFunc.setPatternOptions(QRegularExpression::MultilineOption | QRegularExpression::ExtendedPatternSyntaxOption);
 
         //cout << "Python file <" << pyFile << ">";
@@ -81,7 +81,7 @@ namespace PyFileParser
         QString text{file.readAll()};
         file.close();
 
-        QRegularExpression regex_pyFunc{"[\\n\\t\\s]{0,}def[\\s]{1,}[\\w_\\=\\(\\),\\s]{1,}[:]{1}"};
+        QRegularExpression regex_pyFunc{regexStr_pyFunction};
         regex_pyFunc.setPatternOptions(QRegularExpression::MultilineOption | QRegularExpression::ExtendedPatternSyntaxOption);
 
         QRegularExpression regex_pyDocStr{"[.]{0,}[\\\"]{3}[.]{0,}"};

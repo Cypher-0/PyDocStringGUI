@@ -189,8 +189,9 @@ QString getFormattedDesc(const FunctionDesc &fDesc, const QString &identation)
     {
         for(const auto &elem : fDesc.list_args)
         {
+            auto elemDesc{elem.desc};
             result += identation + "- **`"+elem.name+"`** ( *"+((elem.type.isEmpty())?"-":elem.type)
-                      +"* ): "+((elem.desc.isEmpty())?"-":elem.desc)+"\n\n";
+                      +"* ): "+((elem.desc.isEmpty())?"-":elemDesc)+"\n\n";
         }
     }
 
