@@ -361,6 +361,7 @@ void MainWindow::on_tw_args_cellChanged(int row, int column)
 {
     auto newText{ui->tw_args->item(row,column)->text()};
 
+
     if(m_userProj.funcList.isEmpty())
         return;
 
