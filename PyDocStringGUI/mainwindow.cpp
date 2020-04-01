@@ -372,7 +372,10 @@ void MainWindow::on_tw_args_cellChanged(int row, int column)
     else if(column == 1)
         (*argsList)[row].type = newText;
     else if(column == 2)
+    {
         (*argsList)[row].desc = newText;
+        ui->tw_args->item(row,column)->setToolTip(newText);
+    }
 
     oneElementModified();
 }
@@ -391,7 +394,10 @@ void MainWindow::on_tw_return_cellChanged(int row, int column)
     if(column == 0)
         (*argsList)[row].type = newText;
     else if(column == 1)
+    {
         (*argsList)[row].desc = newText;
+        ui->tw_args->item(row,column)->setToolTip(newText);
+    }
 
     oneElementModified();
 }
@@ -483,7 +489,8 @@ void MainWindow::on_te_desc_textChanged()
         return;
     }
 
-    m_userProj.funcList[m_currentFunc].desc = ui->te_desc->toPlainText();
+    auto tempDesc{ui->te_desc->toPlainText()};
+    m_userProj.funcList[m_currentFunc].desc = tempDesc;
 
     oneElementModified();
 }

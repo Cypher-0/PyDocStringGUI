@@ -171,6 +171,7 @@ QString getFormattedDesc(const FunctionDesc &fDesc, const QString &identation)
     result += "\n";
 
     auto tempDesc{fDesc.desc};
+
     tempDesc.replace("\n","\n"+identation);
     result += identation + tempDesc + "\n\n";
 
