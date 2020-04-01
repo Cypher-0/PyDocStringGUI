@@ -374,6 +374,7 @@ void MainWindow::on_tw_args_cellChanged(int row, int column)
     else if(column == 2)
     {
         (*argsList)[row].desc = newText;
+
         ui->tw_args->item(row,column)->setToolTip(newText);
     }
 
@@ -396,7 +397,8 @@ void MainWindow::on_tw_return_cellChanged(int row, int column)
     else if(column == 1)
     {
         (*argsList)[row].desc = newText;
-        ui->tw_args->item(row,column)->setToolTip(newText);
+
+        ui->tw_return->item(row,column)->setToolTip(newText);
     }
 
     oneElementModified();
