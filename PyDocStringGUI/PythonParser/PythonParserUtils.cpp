@@ -88,7 +88,8 @@ namespace Utils
 
         for(auto elem : tempSplit)
         {
-            auto arg = elem.remove(QRegularExpression("[\\W]{1,}.$"));
+            auto arg = elem.remove(QRegularExpression("[\\W]{1,}.$"));//delete ): at the end of defenition
+            arg.remove(QRegularExpression("=.{1,}$"));//delete parameter default value
             if(arg == "self" || std::size(arg) == 0)
                 continue;
 
