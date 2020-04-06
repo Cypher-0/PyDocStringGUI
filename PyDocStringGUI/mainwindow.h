@@ -80,6 +80,12 @@ private slots:
 
     void on_action_showConsole_triggered();
 
+    //shortcuts
+
+    void upFunctionComboBox_triggered();
+
+    void downFunctionComboBox_triggered();
+
 private:
     Ui::MainWindow *ui;
 

@@ -7,6 +7,7 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QDateTime>
+#include <QShortcut>
 
 #include <QDebug>
 
@@ -114,6 +115,13 @@ MainWindow::MainWindow(const QStringList paramList, QWidget *parent): QMainWindo
 
 
     cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n";
+
+
+    auto *downShortcut{new QShortcut{QKeySequence{"Ctrl+Down"},this}};
+    connect(downShortcut,SIGNAL(activated()),this,SLOT(downFunctionComboBox_triggered()));
+
+    auto *upShortcut{new QShortcut{QKeySequence{"Ctrl+Up"},this}};
+    connect(upShortcut,SIGNAL(activated()),this,SLOT(upFunctionComboBox_triggered()));
 }
 
 MainWindow::~MainWindow()
@@ -753,4 +761,44 @@ void MainWindow::on_action_showConsole_triggered()
         m_console->show();
     else
         m_console->hide();
+}
+
+    //UI Shortcuts
+
+void MainWindow::upFunctionComboBox_triggered()
+{
+    auto curIndex{ui->cb_funcSelec->currentIndex()};
+
+    if(curIndex < 0)
+    {
+        ui->cb_funcSelec->setCurrentIndex(ui->cb_funcSelec->count()-1);
+        return;
+    }
+
+    curIndex--;
+    if(curIndex < 0)
+    {
+        curIndex = ui->cb_funcSelec->count()-1;
+    }
+
+    ui->cb_funcSelec->setCurrentIndex(curIndex);
+}
+
+void MainWindow::downFunctionComboBox_triggered()
+{
+    auto curIndex{ui->cb_funcSelec->currentIndex()};
+
+    if(curIndex < 0)
+    {
+        ui->cb_funcSelec->setCurrentIndex(0);
+        return;
+    }
+
+    curIndex++;
+    if(curIndex >= ui->cb_funcSelec->count())
+    {
+        curIndex = 0;
+    }
+
+    ui->cb_funcSelec->setCurrentIndex(curIndex);
 }

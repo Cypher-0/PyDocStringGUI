@@ -31,6 +31,9 @@
         <layout class="QHBoxLayout" name="lay_h_funcName">
          <item>
           <widget class="QLabel" name="lbl_disp_funcName">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
            <property name="text">
             <string>Nom de la fonction : </string>
            </property>
