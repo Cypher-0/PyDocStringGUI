@@ -125,5 +125,8 @@ private:
 
     void setSavePath(QString newPath);
     void refreshAllViews();
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 };
 #endif // MAINWINDOW_H

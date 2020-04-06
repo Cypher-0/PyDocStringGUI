@@ -558,13 +558,20 @@ void MainWindow::on_pb_funcAdd_clicked()
     if(funcName.isEmpty())
         return;
 
-    m_userProj.funcList.append(PyDesc::FunctionDesc{funcName,"",{},{}});
+    auto insertIndex{ui->cb_funcSelec->currentIndex()+1};
 
-    int newIndex{std::size(m_userProj.funcList)-1};
+    if(insertIndex <= 0 || insertIndex == ui->cb_funcSelec->count()-1)//if no function selected or last function
+    {
+        m_userProj.funcList.append(PyDesc::FunctionDesc{funcName,"",{},{}});
+    }
+    else
+    {
+        m_userProj.funcList.insert(insertIndex,PyDesc::FunctionDesc{funcName,"",{},{}});
+    }
 
-    actFunctionListBox(newIndex);
+    actFunctionListBox(insertIndex);
 
-    m_currentFunc = newIndex;
+    m_currentFunc = insertIndex;
 }
 
 void MainWindow::on_pb_funcMinus_clicked()
@@ -801,4 +808,19 @@ void MainWindow::downFunctionComboBox_triggered()
     }
 
     ui->cb_funcSelec->setCurrentIndex(curIndex);
+}
+
+
+//------------------ PROTECTED
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    auto answer{QMessageBox::question(this,"Confirmation","Voulez-vous sauvegarder les modifications faites sur le projet ?")};
+
+    if(answer == QMessageBox::Yes)
+    {
+        on_action_save_triggered();
+    }
+
+    QMainWindow::closeEvent(event);
 }
