@@ -19,7 +19,7 @@ namespace PyDesc
 
 namespace PyFileParser
 {
-inline const static QString regexStr_pyFunction{"[\\n\\t\\s]{0,}def[\\s]{1,}[\\w_\\=\\(\\)\\[\\],\\s]{1,}[:]{1}"};
+inline const static QString regexStr_pyFunction{"[\\n\\t\\s]{0,}def[\\s]{1,}[\\w_\\=.\\(\\)\\[\\],\\s]{1,}[:]{1}"};
 
     QList<FunctionDesc> findFunctions(QString pyFile);
 
