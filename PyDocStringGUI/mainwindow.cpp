@@ -714,6 +714,12 @@ void MainWindow::on_action_exportToPyFile_triggered()
     if(m_userProj.associatedPyFile.isEmpty())
         return;
 
+    if(!QFile::exists(m_userProj.associatedPyFile))
+    {
+        QMessageBox::critical(this,"Error","Cannot found associated pyFile :\n"+m_userProj.associatedPyFile);
+        return;
+    }
+
     auto success{PyDesc::PyFileParser::writeFuncDescToPyFile(m_userProj,m_set_savePyFileBeforeExport.value)};
 
     auto pyFileName{QFileInfo{m_userProj.associatedPyFile}.fileName()};

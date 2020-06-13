@@ -73,6 +73,7 @@ namespace Utils
         line.remove(QRegularExpression{"[\\t\\s\\r]"});
         line.remove(QRegularExpression{"[#].{0,}"});
         line.remove(std::size(line)-2,2); //remove python ":" from func def and last parenthesis
+        line.remove(QRegularExpression{"=.*[\\{\\[\\(].*[\\]\\}\\)]"});
         line.remove(0,3);//remove python "def" keyword
 
         auto tempSplit{line.split("(")}; //split func name and params
