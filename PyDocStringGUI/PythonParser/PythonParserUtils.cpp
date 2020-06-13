@@ -71,6 +71,7 @@ namespace Utils
     FunctionDesc getFunctionFromLine(QString line)
     {
         line.remove(QRegularExpression{"[\\t\\s\\r]"});
+        line.remove(QRegularExpression{"[#].{0,}"});
         line.remove(std::size(line)-2,2); //remove python ":" from func def and last parenthesis
         line.remove(0,3);//remove python "def" keyword
 

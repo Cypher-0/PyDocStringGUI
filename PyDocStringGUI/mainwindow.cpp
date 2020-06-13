@@ -815,11 +815,16 @@ void MainWindow::downFunctionComboBox_triggered()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    auto answer{QMessageBox::question(this,"Confirmation","Voulez-vous sauvegarder les modifications faites sur le projet ?")};
+    auto answer{QMessageBox::question(this,"Confirmation","Voulez-vous sauvegarder les modifications faites sur le projet ?",QMessageBox::StandardButton::Yes | QMessageBox::No | QMessageBox::Cancel)};
 
     if(answer == QMessageBox::Yes)
     {
         on_action_save_triggered();
+    }
+    else if(answer == QMessageBox::Cancel)
+    {
+        event->ignore();
+        return;
     }
 
     QMainWindow::closeEvent(event);
