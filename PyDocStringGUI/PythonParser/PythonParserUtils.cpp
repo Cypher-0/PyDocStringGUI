@@ -45,19 +45,23 @@ namespace Utils
 
         for(int i = 0; i < std::size(linesList);i++)
         {
-            auto defIndex{linesList.at(i).indexOf(regex)};
+            auto line{linesList.at(i)};
 
-            auto matchs{regex.match(linesList.at(i))};
+            auto matchs{regex.match(line)};
 
             if(matchs.hasMatch())
             {
                 if(keepInComments)
-                    outList.append(i);
-                else
                 {
-                    auto commentIndex{linesList.at(i).indexOf("#")};
+                    outList.append(i);
+                }
+                else // pb here
+                {
+                    auto commentIndex{line.indexOf("#")};
 
-                    if(commentIndex > defIndex+std::size(matchs.capturedTexts()[0]) || commentIndex == -1)
+                    line = line.remove(commentIndex,line.length()-commentIndex);
+
+                    if(line.indexOf(regex) != -1 || commentIndex == -1)
                     {
                         outList.append(i);
                     }
@@ -73,7 +77,13 @@ namespace Utils
         line.remove(QRegularExpression{"[\\t\\s\\r]"});
         line.remove(QRegularExpression{"[#].{0,}"});
         line.remove(std::size(line)-2,2); //remove python ":" from func def and last parenthesis
-        line.remove(QRegularExpression{"=.*[\\{\\[\\(].*[\\]\\}\\)]"});
+        auto t{line.split(",")};
+        line = "";
+        for(const auto& e : t)
+        {
+            auto eqIndex{e.indexOf("=")};
+            line += e.mid(0,eqIndex)+",";
+        }
         line.remove(0,3);//remove python "def" keyword
 
         auto tempSplit{line.split("(")}; //split func name and params
@@ -84,7 +94,7 @@ namespace Utils
         FunctionDesc out{tempSplit[0],""};
 
         //parameters
-        tempSplit = tempSplit[1].split(',');
+        tempSplit = tempSplit[1].split(',',QString::SkipEmptyParts);
 
         QList<Argument> argsList;
 

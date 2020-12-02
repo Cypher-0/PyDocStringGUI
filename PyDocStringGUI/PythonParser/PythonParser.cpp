@@ -88,6 +88,7 @@ namespace PyFileParser
         regex_pyDocStr.setPatternOptions(QRegularExpression::MultilineOption | QRegularExpression::ExtendedPatternSyntaxOption);
 
         auto linesIndexList_pyDef{Utils::linesOf(text,regex_pyFunc,false)};
+
         auto linesIndexList_pyDocStr{Utils::linesOf(text,regex_pyDocStr)};
 
         auto linesList{text.split('\n')};
@@ -103,6 +104,7 @@ namespace PyFileParser
             auto funcName{searchedFunc.name};
 
             auto funcProjIndex{PyDesc::Utils::findFunctionIndex(proj.funcList,searchedFunc)};
+
 
             //cout << funcName << "  " << start <<"  " << end << "  " << funcProjIndex;
 
